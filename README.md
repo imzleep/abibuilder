@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ABI Builder - Arena Breakout: Infinite Gun Database
 
-## Getting Started
+**ABI Builder** is the ultimate weapon configuration and loadout sharing platform for *Arena Breakout: Infinite*. It allows users to create, share, vote on, and discover the best gun builds, complete with detailed statistics and community feedback.
 
-First, run the development server:
+![ABI Builder Preview](/public/logo.png)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+*   **Weapon Builder:** Create custom detailed weapon builds with attachments.
+*   **Build Filters:** Search by **Meta**, **Budget**, **Zero Recoil**, **Streamer**, and more.
+*   **Detailed Stats:** Visualize vertical/horizontal recoil, ergonomics, accuracy, and price.
+*   **Community Voting:** Upvote/downvote builds to highlight the community favorites.
+*   **Streamer Spotlight:** Dedicated section and filtering for verified streamer builds.
+*   **User Profiles:** Customize your bio, avatar, and view your submitted builds.
+*   **Modern UI:** Sleek, dark-themed responsive design built with Tailwind CSS.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+*   **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+*   **Language:** TypeScript
+*   **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL)
+*   **Styling:** Tailwind CSS
+*   **Icons:** Lucide React
+*   **Analytics:** Google Analytics 4
 
-## Learn More
+## 🤝 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📄 License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is open-source and available under the [MIT License](LICENSE).

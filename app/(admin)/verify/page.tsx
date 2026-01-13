@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { BuildCard } from "@/components/shared/BuildCard";
+import BuildCard from "@/components/BuildCard";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { verifyBuildAction } from "@/app/actions/admin";

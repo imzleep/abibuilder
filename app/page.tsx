@@ -1,107 +1,145 @@
-import { createClient } from "@/lib/supabase/server";
-import { BuildCard } from "@/components/shared/BuildCard";
-import { Button } from "@/components/ui/button";
-import { PlusSquare } from "lucide-react";
+
 import Link from "next/link";
-import { FilterBar } from "@/components/features/feed/FilterBar";
-import { AdBanner } from "@/components/features/monetization/AdBanner";
+import Hero from "@/components/Hero";
+import BuildCard from "@/components/BuildCard";
+import StreamerRow from "@/components/StreamerRow";
+import CategoryGrid from "@/components/CategoryGrid";
+import AdBanner from "@/components/ads/AdBanner";
+import { TrendingUp } from "lucide-react";
 
-export const revalidate = 60; // Revalidate every minute
+import { getBuildsAction } from "@/app/actions/builds";
+import { getStreamersAction } from "@/app/actions/admin";
+import { getSiteStats } from "@/app/actions/stats";
 
-interface HomeProps {
-  searchParams: { category?: string };
-}
+// Reusing this action for public fetch
 
-export default async function Home({ searchParams }: HomeProps) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export default async function Home() {
 
-  // Fetch Verified Builds + Related Data
-  let query = supabase
-    .from("builds")
-    .select(`
-      *,
-      weapons!inner (id, name, category),
-      profiles!builds_user_id_fkey (id, display_name, avatar_url)
-    `)
-    .eq("status", "verified") // Only show verified builds
-    .order("created_at", { ascending: false });
+  // Fetch real data
+  const [mostPlayedResult, latestResult, streamers, stats] = await Promise.all([
+    getBuildsAction({ sortBy: 'most-voted' }),
+    getBuildsAction({ sortBy: 'recent' }),
+    getStreamersAction(),
+    getSiteStats()
+  ]);
 
-  // Apply Filter
-  if (searchParams.category) {
-    query = query.eq("weapons.category", searchParams.category);
-  }
+  // Slice top 3
+  const topBuilds = mostPlayedResult.builds.slice(0, 3);
 
-  const { data: builds, error } = await query;
+  // Slice latest 6
+  const recentBuilds = latestResult.builds.slice(0, 6);
 
-  if (error) {
-    console.error("Error fetching builds:", error);
-    return <div className="p-8 text-center text-red-500">Failed to load builds.</div>;
-  }
-
-  // Fetch User's Bookmarks to check status
-  const myBookmarkIds = new Set<string>();
-  if (user) {
-    const { data: bookmarks } = await supabase
-      .from("bookmarks")
-      .select("build_id")
-      .eq("user_id", user.id);
-
-    bookmarks?.forEach((b) => myBookmarkIds.add(b.build_id));
-  }
+  // No longer need client-side handlers here, BuildCard handles it internally now.
 
   return (
-    <div className="container py-8 px-4">
-      {/* Header / Actions */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-10 gap-6">
-        <div className="space-y-2">
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-br from-white via-white to-white/50 bg-clip-text text-transparent drop-shadow-sm">
-            Latest Builds
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl font-light">
-            Discover verified, community-tested weapon configurations dominating the meta.
-          </p>
-        </div>
-        <Button asChild className="hidden md:flex bg-primary text-primary-foreground hover:bg-primary/90 font-bold px-6 py-6 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 group">
-          <Link href="/builder">
-            <PlusSquare className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform" />
-            SHARE YOUR BUILD
-          </Link>
-        </Button>
+    <main className="min-h-screen bg-background relative">
+      {/* Minimal Ambient Glow (reduced opacity) */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none opacity-10">
+        <div className="absolute top-1/3 -left-64 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-1/3 -right-64 w-[500px] h-[500px] bg-accent/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="mb-8 space-y-6">
-        <FilterBar />
-        {/* Top Ad Slot */}
-        <div className="glass-card rounded-xl p-1">
-          <AdBanner slot="feed_top" />
-        </div>
-      </div>
+      {/* Navbar is in layout */}
+      <Hero stats={stats} />
 
-      {/* Grid */}
-      {builds && builds.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          {builds.map((build) => (
-            <BuildCard
-              key={build.id}
-              build={{ ...build, bookmarks: myBookmarkIds.has(build.id) ? [true] : [] }}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col items-center justify-center py-24 text-center border border-dashed border-primary/20 rounded-3xl bg-card/20 backdrop-blur-sm animate-in zoom-in-95 duration-500">
-          <div className="p-4 rounded-full bg-primary/10 mb-4 animate-pulse">
-            <PlusSquare className="h-8 w-8 text-primary" />
+      {/* Streamer Spotlight - Linking to Profiles */}
+      <StreamerRow streamers={streamers} />
+
+      {/* Most Played Section (renamed from Current Meta) */}
+      <section className="relative py-12 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <TrendingUp className="w-8 h-8 text-primary" />
+                <h2 className="font-display font-bold text-3xl">
+                  Most <span className="text-gradient">Played</span>
+                </h2>
+              </div>
+              <p className="text-text-secondary">
+                Top voted builds this week
+              </p>
+            </div>
           </div>
-          <h3 className="text-2xl font-bold mb-3">No verified builds yet</h3>
-          <p className="text-muted-foreground mb-8 max-w-md mx-auto leading-relaxed">
-            The database is currently empty. Be the first to publish a meta-defining weapon build!
-          </p>
-          <Button asChild size="lg" className="bg-primary text-primary-foreground font-bold shadow-xl shadow-primary/10">
-            <Link href="/builder">Create First Build</Link>
-          </Button>
+
+          {/* Most Played Builds Grid (reduced glow) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {topBuilds.map((build: any, index: number) => (
+              <div key={build.id} className="relative">
+                {/* Rank Badge */}
+                <div className="absolute -top-3 -left-3 z-10 w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center font-display font-bold text-xl text-background shadow-lg">
+                  #{index + 1}
+                </div>
+
+                {/* Card with subtle border (no glow) */}
+                <div className="relative border border-primary/30 rounded-2xl overflow-hidden">
+                  <BuildCard
+                    build={build}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      )}
-    </div>
+      </section>
+
+      <section className="relative py-12 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h3 className="font-display font-bold text-2xl mb-6">
+            Browse by <span className="text-gradient">Category</span>
+          </h3>
+
+          <CategoryGrid />
+        </div>
+      </section>
+
+      {/* Ad Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <AdBanner />
+      </div>
+
+      {/* Latest Community Builds */}
+      <section className="relative py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Section Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="font-display font-bold text-3xl mb-2">
+                Latest <span className="text-gradient">Community Builds</span>
+              </h2>
+              <p className="text-text-secondary">
+                Fresh builds from the community
+              </p>
+            </div>
+            <Link href="/builds" className="text-primary hover:text-accent transition-colors text-sm font-semibold">
+              View All →
+            </Link>
+          </div>
+
+          {/* Builds Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recentBuilds.map((build: any) => (
+              <BuildCard
+                key={build.id}
+                build={build}
+              />
+            ))}
+          </div>
+
+          {/* Load More */}
+          <div className="mt-12 text-center">
+            <Link
+              href="/builds"
+              className="inline-block px-8 py-4 rounded-xl glass hover:border-primary/50 transition-all duration-300 font-bold"
+            >
+              Load More Builds
+            </Link>
+          </div>
+        </div>
+      </section>
+
+
+    </main>
   );
 }
