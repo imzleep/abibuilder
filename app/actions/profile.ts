@@ -93,7 +93,7 @@ export async function getUserBuilds(userId: string, page: number = 1, limit: num
 
     const { data, error, count } = await supabase
         .from("builds")
-        .select("*", { count: 'exact' })
+        .select("*, profiles:user_id(username)", { count: 'exact' })
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .range(from, to);
@@ -153,7 +153,7 @@ export async function getUserBuilds(userId: string, page: number = 1, limit: num
             tags: b.tags,
             upvotes: b.upvotes,
             downvotes: b.downvotes,
-            author: b.author || "Unknown",
+            author: b.profiles?.username || "Unknown",
             created_at: b.created_at,
             is_bookmarked: isBookmarked,
             user_vote: myVote,
@@ -176,7 +176,8 @@ export async function getUserBookmarkedBuilds(userId: string, page: number = 1, 
         .select(`
             build_id,
             builds (
-                *
+                *,
+                profiles:user_id(username)
             )
         `, { count: 'exact' })
         .eq("user_id", userId)
@@ -233,7 +234,7 @@ export async function getUserBookmarkedBuilds(userId: string, page: number = 1, 
             tags: b.tags,
             upvotes: b.upvotes,
             downvotes: b.downvotes,
-            author: b.author || "Unknown",
+            author: b.profiles?.username || "Unknown",
             created_at: b.created_at,
             is_bookmarked: true, // It is in bookmarks list
             user_vote: myVote,
