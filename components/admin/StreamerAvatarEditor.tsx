@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Loader2, Upload, User, Save } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { compressImage } from "@/lib/image-compression";
-import { updateStreamerAvatarAction } from "@/app/actions/admin";
+import { uploadStreamerAvatar } from "@/app/actions/admin";
 
 import { useRouter } from "next/navigation";
 
@@ -51,43 +51,13 @@ export default function StreamerAvatarEditor({ streamers }: StreamerAvatarEditor
                 format: 'image/webp'
             });
 
-            // 2. Upload to Supabase
-            const supabase = createClient();
+            // 2. Upload via Server Action (Bypasses RLS)
+            const formData = new FormData();
+            formData.append("file", compressedFile);
+            formData.append("streamerId", selectedId);
 
-            // Note: We use the streamer's ID for the folder to keep it organized, 
-            // even though it's a placeholder. admin policy should allow this.
-            // If RLS blocks it, we might need a public bucket or admin client but usually admins pass RLS.
-            // Wait, client side upload uses the current user's auth. 
-            // If the current user is admin, they should have permission to upload to any folder 
-            // IF the RLS policy on 'avatars' bucket allows admins to write to any path.
-            // Assuming we have a policy like "Admins can upload anywhere".
+            const result = await uploadStreamerAvatar(formData);
 
-            const filePath = `${selectedId}/${Date.now()}.webp`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(filePath, compressedFile, {
-                    upsert: true
-                });
-
-            if (uploadError) {
-                console.error("Supabase Upload Error:", uploadError);
-                throw uploadError;
-            }
-
-            // 3. Get Public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
-
-            // Append a distinct query param just to be 100% sure, though filename unique should be enough
-            const cacheBustedUrl = `${publicUrl}?v=${Date.now()}`;
-
-            setPreviewUrl(cacheBustedUrl);
-
-            // 4. Save to Profile
-            // We save the URL with the query param so it persists in the DB and forces clients to fetch new
-            const result = await updateStreamerAvatarAction(selectedId, cacheBustedUrl);
             if (result.success) {
                 toast.success("Avatar updated successfully!");
                 // Clear state AND Refresh Server Data
@@ -101,7 +71,7 @@ export default function StreamerAvatarEditor({ streamers }: StreamerAvatarEditor
 
         } catch (error: any) {
             console.error("Upload process error:", error);
-            toast.error("Failed to upload image. ensure you are admin.");
+            toast.error("Failed to upload image.");
         } finally {
             setUploading(false);
         }

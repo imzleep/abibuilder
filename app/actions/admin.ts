@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { getAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 
 
@@ -129,14 +130,16 @@ export async function getStreamersAction() {
 
 // Link Placeholder Streamer to Real User
 export async function linkStreamerAccount(placeholderUsername: string, realUserId: string) {
-    const { isAdmin, supabase } = await checkPermissions();
+    const { isAdmin } = await checkPermissions();
     if (!isAdmin) return { success: false, error: "Unauthorized: Admins only" };
+
+    const supabaseAdmin = await getAdminClient(); // Use Service Role Client
 
     try {
         // 1. Fetch Placeholder
-        const { data: placeholder, error: fetchError } = await supabase
+        const { data: placeholder, error: fetchError } = await supabaseAdmin
             .from("profiles")
-            .select("id")
+            .select("id, avatar_url")
             .eq("username", placeholderUsername)
             .eq("is_streamer", true)
             .single();
@@ -148,9 +151,8 @@ export async function linkStreamerAccount(placeholderUsername: string, realUserI
         const placeholderId = placeholder.id;
 
         // 2. Rename Placeholder to Release Username
-        // We append a random suffix to ensure uniqueness just in case
         const tempName = `${placeholderUsername}_OLD_${Date.now()}`;
-        const { error: renameError } = await supabase
+        const { error: renameError } = await supabaseAdmin
             .from("profiles")
             .update({ username: tempName })
             .eq("id", placeholderId);
@@ -158,24 +160,25 @@ export async function linkStreamerAccount(placeholderUsername: string, realUserI
         if (renameError) throw new Error(`Failed to rename placeholder: ${renameError.message}`);
 
         // 3. Update Real User to Target Username & Set Streamer Status
-        const { error: updateUserError } = await supabase
+        // Also sync avatar if desired (optional)
+        const { error: updateUserError } = await supabaseAdmin
             .from("profiles")
             .update({
                 username: placeholderUsername,
-                is_streamer: true
+                is_streamer: true,
+                avatar_url: placeholder.avatar_url // Transfer avatar
             })
             .eq("id", realUserId);
 
         if (updateUserError) {
             // ROLLBACK attempts (manual)
-            console.error("Link failed at update step. Needs manual intervention or rollback logic.");
-            // Revert placeholder name logic could go here
-            await supabase.from("profiles").update({ username: placeholderUsername }).eq("id", placeholderId);
+            console.error("Link failed at update step.");
+            await supabaseAdmin.from("profiles").update({ username: placeholderUsername }).eq("id", placeholderId);
             return { success: false, error: `Failed to update real user: ${updateUserError.message}` };
         }
 
         // 4. Move Builds from Placeholder to Real User
-        const { error: moveBuildsError } = await supabase
+        const { error: moveBuildsError } = await supabaseAdmin
             .from("builds")
             .update({ user_id: realUserId })
             .eq("user_id", placeholderId);
@@ -185,15 +188,14 @@ export async function linkStreamerAccount(placeholderUsername: string, realUserI
             return { success: false, error: "Profile updated but failed to transfer builds." };
         }
 
-        // 5. Delete Placeholder Profile
-        const { error: deleteError } = await supabase
-            .from("profiles")
-            .delete()
-            .eq("id", placeholderId);
+        // 5. Delete Placeholder User (Auth + Profile)
+        // Using auth.admin.deleteUser deletes the user from auth.users, which cascades to profiles
+        const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(placeholderId);
 
         if (deleteError) {
-            console.error("Failed to delete placeholder:", deleteError);
-            // Not critical, but annoying
+            console.error("Failed to delete placeholder user (Auth):", deleteError);
+            // Fallback: try deleting profile manually if auth deletion fails (unlikely with service role)
+            await supabaseAdmin.from("profiles").delete().eq("id", placeholderId);
         }
 
         revalidatePath("/admin");
@@ -229,36 +231,67 @@ export async function searchUsersAction(query: string) {
     return data || [];
 }
 
-export async function updateStreamerAvatarAction(streamerId: string, avatarUrl: string) {
-    const { isAdmin, supabase } = await checkPermissions();
+export async function uploadStreamerAvatar(formData: FormData) {
+    const { isAdmin } = await checkPermissions();
     if (!isAdmin) return { success: false, error: "Unauthorized: Admins only" };
 
+    const file = formData.get("file") as File;
+    const streamerId = formData.get("streamerId") as string;
 
+    if (!file || !streamerId) {
+        return { success: false, error: "Missing file or streamer ID" };
+    }
 
-    const { error } = await supabase
-        .from("profiles")
-        .update({
-            avatar_url: avatarUrl
-        })
-        .eq("id", streamerId);
+    const supabaseAdmin = await getAdminClient();
 
-    if (error) {
-        console.error("Update Avatar Error:", error);
+    try {
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${streamerId}/${Date.now()}.${fileExt}`;
+        const arrayBuffer = await file.arrayBuffer();
+        const buffer = Buffer.from(arrayBuffer);
+
+        const { error: uploadError } = await supabaseAdmin.storage
+            .from('avatars')
+            .upload(filePath, buffer, {
+                contentType: file.type,
+                upsert: true
+            });
+
+        if (uploadError) {
+            console.error("Admin Upload Error:", uploadError);
+            return { success: false, error: uploadError.message };
+        }
+
+        const { data: { publicUrl } } = supabaseAdmin.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+        const cacheBustedUrl = `${publicUrl}?v=${Date.now()}`;
+
+        // Update Profile
+        const { error: dbError } = await supabaseAdmin
+            .from("profiles")
+            .update({ avatar_url: cacheBustedUrl })
+            .eq("id", streamerId);
+
+        if (dbError) {
+            return { success: false, error: dbError.message };
+        }
+
+        revalidatePath("/admin");
+        revalidatePath("/");
+
+        // Try to revalidate profile page if we can get username, but not critical
+        // We can fetch it if needed
+        const { data: profile } = await supabaseAdmin.from("profiles").select("username").eq("id", streamerId).single();
+        if (profile?.username) {
+            revalidatePath(`/profile/${profile.username}`);
+        }
+
+        return { success: true };
+
+    } catch (error: any) {
+        console.error("Upload Action Error:", error);
         return { success: false, error: error.message };
     }
-
-
-
-    // Need to revalidate the specific profile page if possible, but "/" covers the streamer list.
-    // Fetch username to revalidate profile page
-    const { data: profile } = await supabase.from("profiles").select("username").eq("id", streamerId).single();
-
-    revalidatePath("/admin", "layout");
-    revalidatePath("/", "layout");
-
-    if (profile?.username) {
-        revalidatePath(`/profile/${profile.username}`, "layout");
-    }
-
-    return { success: true };
 }
