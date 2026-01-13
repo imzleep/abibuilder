@@ -81,7 +81,7 @@ export async function generateMetadata(
   const description = profile.bio || `Check out ${profile.username}'s weapon builds on ABI Builder.`;
 
   return {
-    title: `${profile.username} | ABI Builder`,
+    title: `${profile.username}'s Builds | ABI Builder`,
     description: description.substring(0, 160),
     openGraph: {
       title: `${profile.username}'s Profile`,
