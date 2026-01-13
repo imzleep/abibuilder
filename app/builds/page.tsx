@@ -173,7 +173,19 @@ export default function BuildsPage() {
         <div className="flex gap-6">
           <aside className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-24 glass-elevated rounded-2xl p-6 max-h-[calc(100vh-7rem)] overflow-y-auto custom-scrollbar">
-              <SidebarContent />
+              <BuildFilters
+                selectedCategory={selectedCategory}
+                updateUrl={updateUrl}
+                selectedWeapons={selectedWeapons}
+                weaponSearchQuery={weaponSearchQuery}
+                setWeaponSearchQuery={setWeaponSearchQuery}
+                filteredWeapons={filteredWeapons}
+                toggleWeapon={toggleWeapon}
+                selectedStreamer={selectedStreamer}
+                streamerOptions={streamerOptions}
+                sortBy={sortBy}
+                clearFilters={clearFilters}
+              />
             </div>
           </aside>
 
