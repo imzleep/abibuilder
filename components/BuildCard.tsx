@@ -1,5 +1,7 @@
 "use client";
 
+
+import Link from "next/link";
 import { useState } from "react";
 import { ArrowBigUp, ArrowBigDown, Bookmark, Copy, Trash2, Loader2 } from "lucide-react";
 import { WeaponBuild } from "@/types";
@@ -137,7 +139,13 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
           </h3>
 
           <p className="text-text-secondary text-xs mb-3">
-            by <span className="text-primary font-medium">{build.author}</span>
+            by {build.author !== "Unknown" ? (
+              <Link href={`/profile/${build.author}`} className="text-primary font-medium hover:underline hover:text-accent transition-colors">
+                {build.author}
+              </Link>
+            ) : (
+              <span className="text-primary font-medium">{build.author}</span>
+            )}
           </p>
 
           {/* Build Code */}

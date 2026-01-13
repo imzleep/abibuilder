@@ -21,7 +21,7 @@ const getCachedStats = unstable_cache(
             // Safer to just handle null result
             supabase.from("builds").select("*", { count: "exact", head: true }),
             supabase.from("profiles").select("*", { count: "exact", head: true }),
-            supabase.from("votes").select("*", { count: "exact", head: true })
+            supabase.from("build_votes").select("*", { count: "exact", head: true })
         ]);
 
         return {
