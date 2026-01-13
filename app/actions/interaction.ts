@@ -3,6 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
+import { getAdminClient } from "@/lib/supabase/admin";
+
 export async function toggleVoteAction(buildId: string, type: 'up' | 'down') {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -32,31 +34,26 @@ export async function toggleVoteAction(buildId: string, type: 'up' | 'down') {
         await supabase.from("build_votes").insert({ user_id: user.id, build_id: buildId, vote_type: type });
     }
 
-    // Sync counts
-    await updateBuildCounts(supabase, buildId);
+    // Sync counts (bypass RLS)
+    await updateBuildCounts(buildId);
 
     revalidatePath("/builds");
     revalidatePath("/");
     return { success: true };
 }
 
-// Helper for RPC calls (assuming we might need them, or manual update)
-// Actually, manual update is safer without specific RPCs setup.
-// Let's rewrite using direct UPDATE for simplicity if RPCs don't exist.
-// Since we didn't create RPCs in the SQL, let's do direct SQL updates or fetch-calculate-update (less safe but OK for now)
-// Better: Use `increment` if Supabase client supported it, but it doesn't directly.
-// Best approach without RPC: Just rely on COUNT(*) from build_votes table to display, OR update columns manually.
-// For performance, let's update columns manually.
+async function updateBuildCounts(buildId: string) {
+    const supabaseAdmin = await getAdminClient();
 
-async function updateBuildCounts(supabase: any, buildId: string) {
     // Recalculate directly from votes table
-    const { count: up } = await supabase.from("build_votes").select("*", { count: 'exact', head: true }).eq("build_id", buildId).eq("vote_type", "up");
-    const { count: down } = await supabase.from("build_votes").select("*", { count: 'exact', head: true }).eq("build_id", buildId).eq("vote_type", "down");
+    // Note: We can use supabaseAdmin for reading votes too if RLS blocks reading others' votes? 
+    // Usually reading is Public, but let's be safe and use Admin for everything in this maintenance task.
+    const { count: up } = await supabaseAdmin.from("build_votes").select("*", { count: 'exact', head: true }).eq("build_id", buildId).eq("vote_type", "up");
+    const { count: down } = await supabaseAdmin.from("build_votes").select("*", { count: 'exact', head: true }).eq("build_id", buildId).eq("vote_type", "down");
 
-    await supabase.from("builds").update({ upvotes: up || 0, downvotes: down || 0 }).eq("id", buildId);
+    await supabaseAdmin.from("builds").update({ upvotes: up || 0, downvotes: down || 0 }).eq("id", buildId);
 }
 
-// Redefining Export with safer logic
 export async function handleVote(buildId: string, type: 'up' | 'down') {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -75,7 +72,7 @@ export async function handleVote(buildId: string, type: 'up' | 'down') {
     }
 
     // Sync counts
-    await updateBuildCounts(supabase, buildId);
+    await updateBuildCounts(buildId);
 
     revalidatePath("/");
     revalidatePath("/builds");
