@@ -93,7 +93,7 @@ export async function getUserBuilds(userId: string, page: number = 1, limit: num
 
     const { data, error, count } = await supabase
         .from("builds")
-        .select("*, profiles:user_id(username)", { count: 'exact' })
+        .select("*, profiles:user_id(username, is_streamer)", { count: 'exact' })
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .range(from, to);
@@ -133,6 +133,15 @@ export async function getUserBuilds(userId: string, page: number = 1, limit: num
         const isBookmarked = userBookmarks.some(bk => bk.build_id === b.id);
         const canDelete = user ? (user.id === userId || isAdmin || isMod) : false;
 
+        // Dynamic Tag Injection for Streamers
+        let displayTags = b.tags || [];
+        // Handle array vs object response from Supabase just in case, though :user_id usually returns object
+        const profileData = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
+
+        if (profileData?.is_streamer && !displayTags.includes("Streamer Build")) {
+            displayTags = [...displayTags, "Streamer Build"];
+        }
+
         return {
             id: b.id,
             title: b.title,
@@ -150,10 +159,10 @@ export async function getUserBuilds(userId: string, page: number = 1, limit: num
                 effective_range: b.effective_range,
                 muzzle_velocity: b.muzzle_velocity,
             },
-            tags: b.tags,
+            tags: displayTags,
             upvotes: b.upvotes,
             downvotes: b.downvotes,
-            author: b.profiles?.username || "Unknown",
+            author: profileData?.username || "Unknown",
             created_at: b.created_at,
             is_bookmarked: isBookmarked,
             user_vote: myVote,
@@ -177,7 +186,7 @@ export async function getUserBookmarkedBuilds(userId: string, page: number = 1, 
             build_id,
             builds (
                 *,
-                profiles:user_id(username)
+                profiles:user_id(username, is_streamer)
             )
         `, { count: 'exact' })
         .eq("user_id", userId)
@@ -214,6 +223,14 @@ export async function getUserBookmarkedBuilds(userId: string, page: number = 1, 
         const myVote = userVotes.find(v => v.build_id === b.id)?.vote_type || null;
         const canDelete = user ? (user.id === b.user_id || isAdmin || isMod) : false;
 
+        // Dynamic Tag Injection for Streamers
+        let displayTags = b.tags || [];
+        const profileData = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
+
+        if (profileData?.is_streamer && !displayTags.includes("Streamer Build")) {
+            displayTags = [...displayTags, "Streamer Build"];
+        }
+
         return {
             id: b.id,
             title: b.title,
@@ -231,10 +248,10 @@ export async function getUserBookmarkedBuilds(userId: string, page: number = 1, 
                 effective_range: b.effective_range,
                 muzzle_velocity: b.muzzle_velocity,
             },
-            tags: b.tags,
+            tags: displayTags,
             upvotes: b.upvotes,
             downvotes: b.downvotes,
-            author: b.profiles?.username || "Unknown",
+            author: profileData?.username || "Unknown",
             created_at: b.created_at,
             is_bookmarked: true, // It is in bookmarks list
             user_vote: myVote,
