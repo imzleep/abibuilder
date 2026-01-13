@@ -179,7 +179,12 @@ export default function ProfileClient({
                 toast.success("Profile updated successfully!");
                 setEditOpen(false);
                 // Simple reload to reflect changes for now
-                window.location.reload();
+                // Redirect if username changed, otherwise just reload/refresh
+                if (username !== profile.username) {
+                    window.location.href = `/profile/${username}`;
+                } else {
+                    window.location.reload();
+                }
             } else {
                 toast.error(res.error || "Failed to update profile.");
             }

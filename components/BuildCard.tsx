@@ -138,8 +138,11 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
             {build.title}
           </h3>
 
-          <p className="text-text-secondary text-xs mb-3">
-            by {build.author !== "Unknown" ? (
+          <p className="text-text-secondary text-xs mb-3 flex flex-wrap items-center gap-1">
+            <span className="font-semibold text-gray-300">{build.weaponName}</span>
+            <span className="text-white/20">•</span>
+            <span>by</span>
+            {build.author !== "Unknown" ? (
               <Link href={`/profile/${build.author}`} className="text-primary font-medium hover:underline hover:text-accent transition-colors">
                 {build.author}
               </Link>
