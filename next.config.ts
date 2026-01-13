@@ -15,6 +15,22 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com", // Google Auth support just in case
       },
+      {
+        protocol: "https",
+        hostname: "yt3.ggpht.com", // YouTube
+      },
+      {
+        protocol: "https",
+        hostname: "static-cdn.jtvnw.net", // Twitch
+      },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com", // Twitter
+      },
+      {
+        protocol: "https",
+        hostname: "i.imgur.com", // Imgur
+      },
     ],
   },
 };

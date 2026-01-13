@@ -255,6 +255,32 @@ export async function getBuildsAction(filters: any = {}, page: number = 1, limit
         }
     }
 
+    // 4.5 Specific Weapons Filter (Server-Side)
+    if (filters.weapons && filters.weapons.length > 0) {
+        // filters.weapons is an array of slugs (e.g. ['ak-47', 'm4a1'])
+        // We need to map these slugs back to weapon IDs.
+
+        // Fetch all weapons to resolve slugs (efficient enough for <100 items)
+        const { data: allWeapons } = await supabase.from("weapons").select("id, name");
+
+        if (allWeapons && allWeapons.length > 0) {
+            const targetSlugs = Array.isArray(filters.weapons) ? filters.weapons : [filters.weapons];
+
+            const matchedIds = allWeapons
+                .filter((w: any) => {
+                    const slug = w.name.toLowerCase().replace(/\s+/g, '-');
+                    return targetSlugs.includes(slug);
+                })
+                .map((w: any) => w.id);
+
+            if (matchedIds.length > 0) {
+                query = query.in("weapon_id", matchedIds);
+            } else {
+                query = query.eq("id", "00000000-0000-0000-0000-000000000000"); // No weapons matched
+            }
+        }
+    }
+
 
     // 5. Tag Filter
     if (filters.tag && filters.tag !== 'all') {

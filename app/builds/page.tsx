@@ -43,6 +43,7 @@ export default function BuildsPage() {
   const initialSort = searchParams.get('sortBy') || "most-voted";
   const initialQuery = searchParams.get('query') || "";
   const initialTag = searchParams.get('tag') || "all";
+  const initialWeapons = searchParams.get('weapons') ? searchParams.get('weapons')!.split(',') : [];
 
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [selectedStreamer, setSelectedStreamer] = useState(initialStreamer);
@@ -56,7 +57,7 @@ export default function BuildsPage() {
   const [loading, setLoading] = useState(true);
   const [totalItems, setTotalItems] = useState(0);
   const [allWeapons, setAllWeapons] = useState<{ value: string; label: string; category: string }[]>([]);
-  const [selectedWeapons, setSelectedWeapons] = useState<string[]>([]);
+  const [selectedWeapons, setSelectedWeapons] = useState<string[]>(initialWeapons);
   const [streamerOptions, setStreamerOptions] = useState<{ value: string; label: string }[]>([
     { value: "all", label: "All Streamers" }
   ]);
@@ -66,7 +67,7 @@ export default function BuildsPage() {
   // const [maxBudget, setMaxBudget] = useState(5000000);
 
   // Update URL helper
-  const updateUrl = (key: string, value: string) => {
+  const updateUrl = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
     if (value && value !== 'all') {
       params.set(key, value);
@@ -90,19 +91,23 @@ export default function BuildsPage() {
         const currentSort = searchParams.get('sortBy') || "most-voted";
         const currentQuery = searchParams.get('query') || "";
         const currentTag = searchParams.get('tag') || "all";
+        const currentWeaponsParam = searchParams.get('weapons');
+        const currentWeapons = currentWeaponsParam ? currentWeaponsParam.split(',') : [];
 
         setSelectedCategory(currentCategory);
         setSelectedStreamer(currentStreamer);
         setSortBy(currentSort);
         setBuildSearchQuery(currentQuery);
         setSelectedTag(currentTag);
+        setSelectedWeapons(currentWeapons);
 
         const filters = {
           query: currentQuery,
           sortBy: currentSort,
           category: currentCategory,
           streamer: currentStreamer,
-          tag: currentTag
+          tag: currentTag,
+          weapons: currentWeapons // Pass weapons to server
         };
 
         const currentPage = parseInt(searchParams.get('page') || "1");
@@ -154,35 +159,27 @@ export default function BuildsPage() {
   };
 
   const toggleWeapon = (weaponValue: string) => {
-    setSelectedWeapons(prev =>
-      prev.includes(weaponValue)
-        ? prev.filter(w => w !== weaponValue)
-        : [...prev, weaponValue]
-    );
+    const current = new Set(selectedWeapons);
+    if (current.has(weaponValue)) {
+      current.delete(weaponValue);
+    } else {
+      current.add(weaponValue);
+    }
+
+    const newValue = Array.from(current).join(',');
+    updateUrl('weapons', newValue.length > 0 ? newValue : null);
   };
 
   const clearFilters = () => {
     setSelectedWeapons([]);
     setWeaponSearchQuery("");
+
+    // Clear all params except keeping layout potentially? usually clear all resets everything
     router.push('/builds');
   };
 
-  // Client-side filtering for specific weapons only
-  const filteredBuilds = builds.filter(build => {
-    // 1. Search Query: handled by server mostly, but we can double check or filter newly typed input
-    const query = buildSearchQuery.toLowerCase();
-    const matchesSearch =
-      build.title.toLowerCase().includes(query) ||
-      build.weaponName?.toLowerCase().includes(query) ||
-      build.author?.toLowerCase().includes(query);
-
-    // 2. Specific Weapons Filter ('selectedWeapons' state - client side)
-    const matchesSpecificWeapon = selectedWeapons.length === 0 || selectedWeapons.some(sw => {
-      return allWeapons.find(w => w.value === sw)?.label === build.weaponName;
-    });
-
-    return matchesSearch && matchesSpecificWeapon;
-  });
+  // Client-side filtering removed (Server-side implemented)
+  const filteredBuilds = builds;
 
   const filteredWeapons = allWeapons.filter(w => {
     // Robust category matching: check raw value OR normalized kebab-case value
