@@ -89,13 +89,13 @@ export default function ProfileClient({
 
 
     const handleVote = (buildId: string, type: 'up' | 'down') => {
-
-        toast.info("Voting coming soon!");
+        // BuildCard handles the logic and toast
+        router.refresh();
     };
 
     const handleBookmark = (buildId: string) => {
-
-        toast.info("Bookmarking coming soon!");
+        // BuildCard handles the logic and toast
+        router.refresh();
     };
 
     const handleCopy = (buildId: string) => {
