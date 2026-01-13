@@ -145,7 +145,7 @@ export default function LoginPage() {
         // Force production URL if not on localhost to avoid any ambiguity
         const redirectUrl = window.location.hostname === 'localhost'
             ? `${window.location.origin}/auth/callback`
-            : 'https://www.abibuilder.com/auth/callback';
+            : 'https://abibuilder.com/auth/callback';
 
         const { error } = await supabase.auth.signInWithOAuth({
             provider: "discord",
