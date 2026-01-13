@@ -54,6 +54,7 @@ export default function UploadBuildPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [buildImage, setBuildImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Stats (number inputs)
   const [vRecoil, setVRecoil] = useState("");
@@ -120,6 +121,8 @@ export default function UploadBuildPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (isSubmitting) return;
+
     if (!buildName || !weaponType || !weaponName || !buildCode || !avgPrice) {
       toast.error("Please fill in all required fields.");
       return;
@@ -131,35 +134,44 @@ export default function UploadBuildPage() {
       return;
     }
 
-    const payload = {
-      buildName,
-      weaponName,
-      weaponId: selectedWeaponId, // Send ID
-      buildCode,
-      avgPrice,
-      description,
-      imageUrl: buildImage, // Add image URL
-      tags: selectedTags,
-      stats: {
-        v_recoil_control: parseInt(vRecoil) || 0,
-        h_recoil_control: parseInt(hRecoil) || 0,
-        ergonomics: parseInt(ergonomics) || 0,
-        weapon_stability: parseInt(stability) || 0,
-        accuracy: parseInt(accuracy) || 0,
-        hipfire_stability: parseInt(hipfire) || 0,
-        effective_range: parseInt(range) || 0,
-        muzzle_velocity: parseInt(velocity) || 0,
-      },
-      authorId: selectedAuthorId || undefined, // Send if selected
-    };
+    setIsSubmitting(true);
 
-    const result = await createBuildAction(payload);
+    try {
+      const payload = {
+        buildName,
+        weaponName,
+        weaponId: selectedWeaponId, // Send ID
+        buildCode,
+        avgPrice,
+        description,
+        imageUrl: buildImage, // Add image URL
+        tags: selectedTags,
+        stats: {
+          v_recoil_control: parseInt(vRecoil) || 0,
+          h_recoil_control: parseInt(hRecoil) || 0,
+          ergonomics: parseInt(ergonomics) || 0,
+          weapon_stability: parseInt(stability) || 0,
+          accuracy: parseInt(accuracy) || 0,
+          hipfire_stability: parseInt(hipfire) || 0,
+          effective_range: parseInt(range) || 0,
+          muzzle_velocity: parseInt(velocity) || 0,
+        },
+        authorId: selectedAuthorId || undefined, // Send if selected
+      };
 
-    if (result.success) {
-      toast.success("Build submitted! It is now pending admin approval and will be published shortly.");
-      router.push("/builds");
-    } else {
-      toast.error(result.error || "Failed to upload build. Check logs.");
+      const result = await createBuildAction(payload);
+
+      if (result.success) {
+        toast.success("Build submitted! It is now pending admin approval and will be published shortly.");
+        router.push("/builds");
+      } else {
+        toast.error(result.error || "Failed to upload build. Check logs.");
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast.error("An unexpected error occurred.");
+      setIsSubmitting(false);
     }
   };
 
@@ -599,10 +611,11 @@ export default function UploadBuildPage() {
           <div className="flex gap-4">
             <button
               type="submit"
-              className="flex-1 py-4 rounded-xl bg-gradient-to-r from-primary to-accent text-background font-bold text-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+              disabled={uploading || isSubmitting}
+              className="flex-1 py-4 rounded-xl bg-gradient-to-r from-primary to-accent text-background font-bold text-lg hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Upload className="w-5 h-5" />
-              Upload Build
+              {isSubmitting ? "Uploading..." : "Upload Build"}
             </button>
             <button
               type="button"
