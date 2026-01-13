@@ -10,7 +10,7 @@ import { Loader2, Check, X, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
-import { checkUsernameAvailability } from "@/app/actions/auth";
+import { checkUsernameAvailability, checkEmailAvailability } from "@/app/actions/auth";
 
 export default function LoginPage() {
     const [activeTab, setActiveTab] = useState("login");
@@ -97,6 +97,14 @@ export default function LoginPage() {
         }
 
         setIsLoading(true);
+
+        // 1. Check Email Availability (Server-Side)
+        const isEmailAvailable = await checkEmailAvailability(email);
+        if (!isEmailAvailable) {
+            toast.error("This email is already registered. Please login instead.");
+            setIsLoading(false);
+            return;
+        }
 
         const { error } = await supabase.auth.signUp({
             email,
