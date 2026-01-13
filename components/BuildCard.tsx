@@ -120,23 +120,27 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
       <div className="group relative glass-elevated rounded-xl overflow-hidden transition-all duration-300 animate-fade-in hover:border-primary/30">
         <div className="relative p-4">
           {/* Image Section */}
-          <div className="relative mb-3 rounded-lg overflow-hidden bg-surface aspect-[4/3]">
-            <img
-              src={build.weaponImage || "https://placehold.co/400x300/1a1a1a/666?text=No+Image"}
-              alt={build.weaponName}
-              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-            />
+          <Link href={`/builds/${build.short_code || build.id}`} className="block">
+            <div className="relative mb-3 rounded-lg overflow-hidden bg-surface aspect-[4/3]">
+              <img
+                src={build.weaponImage || "https://placehold.co/400x300/1a1a1a/666?text=No+Image"}
+                alt={build.weaponName}
+                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+              />
 
-            {/* Price Badge */}
-            <div className="absolute top-2 right-2 px-2.5 py-1 rounded-lg glass-elevated font-bold text-sm text-primary border border-primary/30">
-              {formatPrice(build.price)}
+              {/* Price Badge */}
+              <div className="absolute top-2 right-2 px-2.5 py-1 rounded-lg glass-elevated font-bold text-sm text-primary border border-primary/30">
+                {formatPrice(build.price)}
+              </div>
             </div>
-          </div>
+          </Link>
 
           {/* Title & Author */}
-          <h3 className="font-display font-bold text-lg mb-1 leading-tight group-hover:text-primary transition-colors truncate">
-            {build.title}
-          </h3>
+          <Link href={`/builds/${build.short_code || build.id}`} className="block">
+            <h3 className="font-display font-bold text-lg mb-1 leading-tight group-hover:text-primary transition-colors truncate">
+              {build.title}
+            </h3>
+          </Link>
 
           <p className="text-text-secondary text-xs mb-3 flex flex-wrap items-center gap-1">
             <span className="font-semibold text-gray-300">{build.weaponName}</span>

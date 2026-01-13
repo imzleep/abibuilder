@@ -121,7 +121,13 @@ export async function createBuildAction(formData: any) {
     }
 
     // 4. Insert Build
+    const generateShortId = () => Math.random().toString(36).substring(2, 9); // 7 chars
+
+    // ... (inside createBuildAction)
+
     // 4. Insert Build
+    const shortCode = generateShortId();
+
     const { data, error } = await supabase
         .from("builds")
         .insert({
@@ -131,12 +137,13 @@ export async function createBuildAction(formData: any) {
             description,
             build_code: buildCode,
             price: parseInt(avgPrice) || 0,
-            image_url: imageUrl, // Save uploaded image URL
+            image_url: imageUrl,
+            short_code: shortCode, // NEW
 
             // Relation
             weapon_id: weaponData.id,
-            weapon_name: weaponData.name, // Denormalized
-            weapon_image: null, // Weapon table has no image_url column currently
+            weapon_name: weaponData.name,
+            weapon_image: null,
 
             // Stats (Flattened)
             v_recoil_control: stats.v_recoil_control,
@@ -150,9 +157,7 @@ export async function createBuildAction(formData: any) {
 
             // Meta
             tags: processedTags,
-            status: "pending", // Default to pending for Admin review
-            // Let's set 'verified' for MVP, or 'pending' if Admin flow exists. 
-            // Admin flow existed! Let's keep 'pending'.
+            status: "pending",
         })
         .select()
         .single();
@@ -401,7 +406,9 @@ export async function getBuildsAction(filters: any = {}, page: number = 1, limit
             created_at: b.created_at,
             is_bookmarked: isBookmarked,
             user_vote: myVote,
-            can_delete: canDelete
+
+            can_delete: canDelete,
+            short_code: b.short_code, // NEW
         };
     });
 
@@ -466,4 +473,97 @@ export async function deleteBuildAction(buildId: string) {
     revalidatePath("/profile", "layout"); // Revalidate all profiles roughly
 
     return { success: true };
+}
+
+// GET SINGLE BUILD (Public)
+export async function getBuildAction(buildId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // Determine if we are looking up by UUID or Short Code
+    let query = supabase
+        .from("builds")
+        .select(`
+            *,
+            profiles:user_id (username, is_streamer)
+        `);
+
+    // Basic heuristic: UUIDs are 36 chars. Short codes are much shorter (7-10).
+    const isUuid = buildId.length > 20 && buildId.includes('-');
+
+    if (isUuid) {
+        query = query.eq("id", buildId);
+    } else {
+        query = query.eq("short_code", buildId);
+    }
+
+    const { data, error } = await query.single();
+
+    if (error || !data) {
+        console.error("Get Single Build Error:", error);
+        return { success: false, error: "Build not found" };
+    }
+
+    // Fetch interactions for this user
+    let userVote = null;
+    let isBookmarked = false;
+
+    if (user) {
+        const { data: vote } = await supabase.from("build_votes").select("vote_type").eq("build_id", buildId).eq("user_id", user.id).single();
+        userVote = vote?.vote_type || null;
+
+        const { data: bookmark } = await supabase.from("bookmarks").select("id").eq("build_id", buildId).eq("user_id", user.id).single();
+        isBookmarked = !!bookmark;
+    }
+
+    // Check permissions
+    let isAdmin = false;
+    let isMod = false;
+    if (user) {
+        const { data: profile } = await supabase.from("profiles").select("is_admin, is_moderator").eq("id", user.id).single();
+        isAdmin = profile?.is_admin || false;
+        isMod = profile?.is_moderator || false;
+    }
+
+    const canDelete = user ? (user.id === data.user_id || isAdmin || isMod) : false;
+
+    // Dynamic Tag Logic
+    let displayTags = data.tags || [];
+    const profileData = Array.isArray(data.profiles) ? data.profiles[0] : data.profiles;
+
+    if (profileData?.is_streamer && !displayTags.includes("Streamer Build")) {
+        displayTags = [...displayTags, "Streamer Build"];
+    }
+
+    const build = {
+        id: data.id,
+        title: data.title || data.weapon_name,
+        weaponName: data.weapon_name,
+        weaponImage: data.weapon_image || data.image_url,
+        price: data.price,
+        buildCode: data.build_code,
+        description: data.description,
+        stats: {
+            v_recoil_control: data.v_recoil_control,
+            h_recoil_control: data.h_recoil_control,
+            ergonomics: data.ergonomics,
+            weapon_stability: data.weapon_stability,
+            accuracy: data.accuracy,
+            hipfire_stability: data.hipfire_stability,
+            effective_range: data.effective_range,
+            muzzle_velocity: data.muzzle_velocity,
+        },
+        tags: displayTags,
+        upvotes: data.upvotes || 0,
+        downvotes: data.downvotes || 0,
+        author: profileData?.username || "Unknown",
+        created_at: data.created_at,
+        is_bookmarked: isBookmarked,
+        user_vote: userVote,
+        can_delete: canDelete,
+        can_edit: isAdmin || isMod,
+        user_id: data.user_id
+    };
+
+    return { success: true, build };
 }

@@ -35,7 +35,6 @@ export default async function ProfilePage({
   const { data: { user: currentUser } } = await supabase.auth.getUser();
   const isOwner = currentUser?.id === profileRes.data.id;
 
-  // 3. Fetch Builds on Server (Parallel)
   // 3. Get Pagination & Tab Info
   const sp = await searchParams; // Unwrap promise
   const currentPage = parseInt((sp.page as string) || "1");
@@ -61,4 +60,33 @@ export default async function ProfilePage({
       currentPage={currentPage}
     />
   );
+}
+
+// Metadata Generation
+import { Metadata } from "next";
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ username: string }> }
+): Promise<Metadata> {
+  const { username } = await params;
+  const profileRes = await getProfileByUsername(username);
+
+  if (!profileRes.success || !profileRes.data) {
+    return {
+      title: "User Not Found | ABI Builder"
+    };
+  }
+
+  const profile = profileRes.data;
+  const description = profile.bio || `Check out ${profile.username}'s weapon builds on ABI Builder.`;
+
+  return {
+    title: `${profile.username} | ABI Builder`,
+    description: description.substring(0, 160),
+    openGraph: {
+      title: `${profile.username}'s Profile`,
+      description: description,
+      images: [{ url: profile.avatar_url || "/og-image.jpg" }]
+    }
+  };
 }
