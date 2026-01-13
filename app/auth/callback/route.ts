@@ -4,9 +4,19 @@ import { createClient } from '@/lib/supabase/server';
 export const runtime = 'edge';
 
 export async function GET(request: Request) {
-    const { searchParams, origin } = new URL(request.url);
+    const { searchParams, origin: urlOrigin } = new URL(request.url);
     const code = searchParams.get('code');
     const next = searchParams.get('next') ?? '/';
+
+    // Cloudflare/Vercel often sets request.url to localhost internally
+    // We need to reconstruct the actual origin
+    const forwardedHost = request.headers.get('x-forwarded-host');
+    const host = request.headers.get('host');
+    const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+
+    // Prioritize headers to determine the actual domain the user is on
+    const effectiveHost = forwardedHost || host || urlOrigin.replace(/^https?:\/\//, '');
+    const origin = `${protocol}://${effectiveHost}`;
 
     // Check for errors returned by Supabase directly
     const error = searchParams.get('error');
