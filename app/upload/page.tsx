@@ -178,11 +178,11 @@ export default function UploadBuildPage() {
   // const availableWeapons = weaponType ? weaponData[weaponType as keyof typeof weaponData] || [] : [];
 
   const [user, setUser] = useState<any>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [canPostAsStreamer, setCanPostAsStreamer] = useState(false);
   const [streamers, setStreamers] = useState<any[]>([]);
   const [selectedAuthorId, setSelectedAuthorId] = useState("");
 
-  // Check Auth & Admin on Mount
+  // Check Auth & Permissions on Mount
   useEffect(() => {
     const init = async () => {
       const supabase = createClient();
@@ -190,10 +190,17 @@ export default function UploadBuildPage() {
 
       if (user) {
         setUser(user);
-        // Check Admin
-        const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
-        if (profile?.is_admin) {
-          setIsAdmin(true);
+        // Check Permissions
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("is_admin, can_post_as_streamer")
+          .eq("id", user.id)
+          .single();
+
+        const hasPermission = profile?.is_admin || profile?.can_post_as_streamer;
+
+        if (hasPermission) {
+          setCanPostAsStreamer(true);
           // Fetch Streamers
           const streamerList = await getStreamersAction();
           setStreamers(streamerList);
@@ -303,11 +310,11 @@ export default function UploadBuildPage() {
           <div className="glass-elevated rounded-2xl p-6 space-y-6">
             <h2 className="font-display font-bold text-2xl mb-4">Basic Information</h2>
 
-            {/* Admin: Post as Streamer */}
-            {isAdmin && streamers.length > 0 && (
+            {/* Permission: Post as Streamer */}
+            {canPostAsStreamer && streamers.length > 0 && (
               <div className="p-4 rounded-xl bg-accent/10 border border-accent/30 mb-6">
                 <label className="block text-sm font-bold text-accent mb-2">
-                  Admin: Post as Streamer calling
+                  Streamer Mode: Post as...
                 </label>
                 <select
                   value={selectedAuthorId}

@@ -15,6 +15,7 @@ export interface UserProfile {
     is_streamer: boolean;
     is_admin: boolean;
     is_moderator: boolean;
+    can_post_as_streamer?: boolean; // Permission to upload on behalf of streamers
     created_at: string;
     last_username_change?: string; // New field
     stats: {

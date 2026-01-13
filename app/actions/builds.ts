@@ -69,19 +69,19 @@ export async function createBuildAction(formData: any) {
     let targetUserId = user.id;
 
     if (authorId) {
-        // Verify current user is admin
+        // Verify current user has permission (Admin OR can_post_as_streamer)
         const { data: profile } = await supabase
             .from("profiles")
-            .select("is_admin")
+            .select("is_admin, can_post_as_streamer")
             .eq("id", user.id)
             .single();
 
-        if (profile?.is_admin) {
+        if (profile?.is_admin || profile?.can_post_as_streamer) {
             targetUserId = authorId;
         } else {
             // Silently fail or warn? Let's just ignore and use own ID to be safe, or throw error.
             // Throwing error is better to prevent confusion.
-            return { success: false, error: "Unauthorized: only admins can post as other users." };
+            return { success: false, error: "Unauthorized: only admins or authorized users can post as other users." };
         }
     }
 
