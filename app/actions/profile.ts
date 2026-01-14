@@ -265,12 +265,17 @@ export async function getUserBookmarkedBuilds(userId: string, page: number = 1, 
     return { builds, totalCount: count || 0 };
 }
 
-export async function updateProfileAction(username: string, avatarUrl: string, bio: string) {
+export async function updateProfileAction(username: string, displayName: string, avatarUrl: string, bio: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
         return { success: false, error: "Unauthorized" };
+    }
+
+    // Validate Display Name (Twitch style: strictly case-insensitive match)
+    if (displayName.toLowerCase() !== username.toLowerCase()) {
+        return { success: false, error: "Display Name must match your Username (only capitalization changes allowed)." };
     }
 
     // 1. Check if username is taken (if changed)
@@ -297,6 +302,7 @@ export async function updateProfileAction(username: string, avatarUrl: string, b
     // 2. Update Profile Table
     const updateData: any = {
         username,
+        display_name: displayName,
         avatar_url: avatarUrl,
         bio,
     };

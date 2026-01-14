@@ -68,6 +68,7 @@ export default function ProfileClient({
 
     // Edit Form State
     const [username, setUsername] = useState(profile.username);
+    const [displayName, setDisplayName] = useState(profile.display_name);
     const [bio, setBio] = useState(profile.bio || "");
     const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || "");
     const [uploading, setUploading] = useState(false);
@@ -173,7 +174,7 @@ export default function ProfileClient({
                 return;
             }
 
-            const res = await updateProfileAction(username, avatarUrl, bio);
+            const res = await updateProfileAction(username, displayName, avatarUrl, bio);
 
             if (res.success) {
                 toast.success("Profile updated successfully!");
