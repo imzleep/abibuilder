@@ -167,7 +167,8 @@ export async function getUserBuilds(userId: string, page: number = 1, limit: num
             created_at: b.created_at,
             is_bookmarked: isBookmarked,
             user_vote: myVote,
-            can_delete: canDelete
+            can_delete: canDelete,
+            short_code: b.short_code // NEW
         }
     });
 
@@ -256,7 +257,8 @@ export async function getUserBookmarkedBuilds(userId: string, page: number = 1, 
             created_at: b.created_at,
             is_bookmarked: true, // It is in bookmarks list
             user_vote: myVote,
-            can_delete: canDelete
+            can_delete: canDelete,
+            short_code: b.short_code // NEW
         };
     });
 
