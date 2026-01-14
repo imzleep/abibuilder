@@ -163,7 +163,9 @@ export default function UploadBuildPage() {
 
       if (result.success) {
         toast.success("Build submitted! It is now pending admin approval and will be published shortly.");
-        router.push("/builds");
+        // Redirect to the specific build page (using short code if available)
+        const targetId = result.shortCode || result.buildId;
+        router.push(`/builds/${targetId}`);
       } else {
         toast.error(result.error || "Failed to upload build. Check logs.");
         setIsSubmitting(false);

@@ -168,7 +168,7 @@ export async function createBuildAction(formData: any) {
     }
 
     revalidatePath("/builds");
-    return { success: true, buildId: data.id };
+    return { success: true, buildId: data.id, shortCode: data.short_code };
 }
 
 // GET BUILDS (with filters)
