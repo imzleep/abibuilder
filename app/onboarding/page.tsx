@@ -51,7 +51,7 @@ export default function OnboardingPage() {
             return;
         }
 
-        const res = await updateProfileAction(username, avatarUrl, ""); // Empty bio for onboarding
+        const res = await updateProfileAction(username, username, avatarUrl, ""); // Empty bio for onboarding
 
         if (res.success) {
             toast.success("Profile updated!");
