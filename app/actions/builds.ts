@@ -189,7 +189,8 @@ export async function getBuildsAction(filters: any = {}, page: number = 1, limit
         .from("builds")
         .select(`
             *,
-            profiles:user_id (username, is_streamer)
+            profiles:user_id (username, is_streamer),
+            weapon:weapon_id (name)
         `, { count: 'exact' })
         .eq("status", "verified"); // Only verified
 
@@ -392,8 +393,8 @@ export async function getBuildsAction(filters: any = {}, page: number = 1, limit
 
         return {
             id: b.id,
-            title: b.title || b.weapon_name,
-            weaponName: b.weapon_name,
+            title: b.title || b.weapon?.name || b.weapon_name,
+            weaponName: b.weapon?.name || b.weapon_name,
             weaponImage: b.weapon_image || b.image_url,
             price: b.price,
             buildCode: b.build_code,

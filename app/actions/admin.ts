@@ -107,7 +107,7 @@ export async function verifyBuildAction(buildId: string, status: "verified" | "r
     return { success: true };
 }
 
-export async function getStreamersAction() {
+export async function getStreamersAction(randomize: boolean = false) {
     const supabase = await createClient();
 
     // Check if user is admin (optional, but good practice to hide list if not needed)
@@ -123,6 +123,14 @@ export async function getStreamersAction() {
     if (error) {
         console.error("Fetch Streamers Error:", error);
         return [];
+    }
+
+    if (randomize && data) {
+        // Fisher-Yates Shuffle
+        for (let i = data.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [data[i], data[j]] = [data[j], data[i]];
+        }
     }
 
     return data || [];

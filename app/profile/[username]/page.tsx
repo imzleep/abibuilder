@@ -35,15 +35,28 @@ export default async function ProfilePage({
   const { data: { user: currentUser } } = await supabase.auth.getUser();
   const isOwner = currentUser?.id === profileRes.data.id;
 
-  // 3. Get Pagination & Tab Info
+  // 3. Get Pagination, Tab & Filter Info
   const sp = await searchParams; // Unwrap promise
   const currentPage = parseInt((sp.page as string) || "1");
   const currentTab = (sp.tab as string) || "uploaded";
 
-  // 4. Fetch Builds on Server (Parallel) with Pagination
+  // Construct Filters
+  const filters = {
+    category: (sp.category as string) || 'all',
+    query: (sp.query as string) || '',
+    priceRange: [
+      sp.minPrice ? parseInt(sp.minPrice as string) : undefined,
+      sp.maxPrice ? parseInt(sp.maxPrice as string) : undefined
+    ].filter(x => x !== undefined) as [number, number] | undefined,
+    weapons: sp.weapons ? (typeof sp.weapons === 'string' ? [sp.weapons] : sp.weapons) : [],
+    sortBy: (sp.sortBy as string) || 'created_at',
+    streamer: (sp.streamer as string) || 'all'
+  };
+
+  // 4. Fetch Builds Data on Server (Parallel)
   const [uploadedRes, savedRes] = await Promise.all([
-    getUserBuilds(profileRes.data.id, currentTab === 'uploaded' ? currentPage : 1, 9),
-    getUserBookmarkedBuilds(profileRes.data.id, currentTab === 'saved' ? currentPage : 1, 9)
+    getUserBuilds(profileRes.data.id, filters, currentTab === 'uploaded' ? currentPage : 1, 9),
+    getUserBookmarkedBuilds(profileRes.data.id, filters, currentTab === 'saved' ? currentPage : 1, 9)
   ]);
 
   // 5. Render Client Component with Data
@@ -58,6 +71,7 @@ export default async function ProfilePage({
       autoOpenEdit={shouldAutoOpen && isOwner}
       initialTab={currentTab as 'uploaded' | 'saved'}
       currentPage={currentPage}
+      initialFilters={filters}
     />
   );
 }

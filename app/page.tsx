@@ -19,7 +19,7 @@ export default async function Home() {
   const [mostPlayedResult, latestResult, streamers, stats] = await Promise.all([
     getBuildsAction({ sortBy: 'most-voted' }),
     getBuildsAction({ sortBy: 'recent' }),
-    getStreamersAction(),
+    getStreamersAction(true),
     getSiteStats()
   ]);
 

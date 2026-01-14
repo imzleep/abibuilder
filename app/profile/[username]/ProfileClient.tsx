@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination";
 import BuildCard from "@/components/BuildCard";
 import { WeaponBuild } from "@/types";
-import { Trophy, TrendingUp, Link as LinkIcon, Edit, User, Save, X } from "lucide-react";
+import { Trophy, TrendingUp, Link as LinkIcon, Edit, User, Save, X, Filter, SlidersHorizontal, Search } from "lucide-react";
 import { UserProfile, updateProfileAction } from "@/app/actions/profile";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,6 +43,7 @@ interface ProfileClientProps {
     autoOpenEdit?: boolean;
     initialTab?: 'uploaded' | 'saved';
     currentPage?: number;
+    initialFilters: any;
 }
 
 export default function ProfileClient({
@@ -48,12 +55,36 @@ export default function ProfileClient({
     isOwner,
     autoOpenEdit = false,
     initialTab = 'uploaded',
-    currentPage = 1
+    currentPage = 1,
+    initialFilters,
 }: ProfileClientProps) {
     const [activeTab, setActiveTab] = useState<'uploaded' | 'saved'>(initialTab);
     const [editOpen, setEditOpen] = useState(autoOpenEdit);
     const [editLoading, setEditLoading] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    // Filter State
+    const [sortBy, setSortBy] = useState(initialFilters.sortBy || 'most-voted');
+    const [buildSearchQuery, setBuildSearchQuery] = useState(initialFilters.query || '');
+
+    // Update URL Helper
+    const updateUrl = (key: string, value: string | null) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (value && value !== 'all') {
+            params.set(key, value);
+        } else {
+            params.delete(key);
+        }
+        // Reset page on filter change
+        if (key !== 'page') params.delete('page');
+
+        // Sync local state
+        if (key === 'sortBy') setSortBy(value || 'most-voted');
+        if (key === 'query') setBuildSearchQuery(value || '');
+
+        router.push(`? ${params.toString()} `, { scroll: false });
+    };
 
     useEffect(() => {
         if (initialTab) setActiveTab(initialTab);
@@ -63,7 +94,7 @@ export default function ProfileClient({
         // Optimistic update
         setActiveTab(tab);
         // Navigate
-        router.push(`?tab=${tab}&page=1`);
+        router.push(`? tab = ${tab}& page=1`);
     };
 
     // Edit Form State
@@ -213,7 +244,7 @@ export default function ProfileClient({
                             const discordAvatar = discordIdentity.identity_data?.avatar_url || discordIdentity.identity_data?.picture;
                             if (discordAvatar) {
                                 toast.info("Syncing Discord avatar...");
-                                await updateProfileAction(profile.username, discordAvatar, profile.bio || "");
+                                await updateProfileAction(profile.username, profile.display_name, discordAvatar, profile.bio || "");
                                 setAvatarUrl(discordAvatar);
                                 setTimeout(() => window.location.reload(), 1500);
                             }
@@ -495,32 +526,89 @@ export default function ProfileClient({
                 </div>
 
                 {/* Tabs */}
-                <div className="mb-8">
-                    <div className="flex gap-4 border-b border-white/10">
+                {/* Tabs & Filters */}
+                <div className="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-white/10 pb-4">
+                    <div className="flex gap-4">
                         <button
                             onClick={() => handleTabChange('uploaded')}
-                            className={`px-6 py-3 font-semibold transition-all relative ${activeTab === 'uploaded'
+                            className={`px-4 py-2 font-semibold transition-all relative ${activeTab === 'uploaded'
                                 ? 'text-primary'
                                 : 'text-text-secondary hover:text-text-primary'
                                 }`}
                         >
-                            Uploaded Builds ({totalUploaded})
+                            Uploaded ({totalUploaded})
                             {activeTab === 'uploaded' && (
-                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-accent" />
+                                <div className="absolute -bottom-[17px] left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-accent" />
                             )}
                         </button>
                         <button
                             onClick={() => handleTabChange('saved')}
-                            className={`px-6 py-3 font-semibold transition-all relative ${activeTab === 'saved'
+                            className={`px-4 py-2 font-semibold transition-all relative ${activeTab === 'saved'
                                 ? 'text-primary'
                                 : 'text-text-secondary hover:text-text-primary'
                                 }`}
                         >
-                            Saved Builds ({totalSaved})
+                            Saved ({totalSaved})
                             {activeTab === 'saved' && (
-                                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-accent" />
+                                <div className="absolute -bottom-[17px] left-0 right-0 h-0.5 bg-gradient-to-r from-primary to-accent" />
                             )}
                         </button>
+                    </div>
+
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                        <div className="relative flex-1 sm:flex-initial">
+                            <Search className="absolute left-3 top-2.5 w-4 h-4 text-text-secondary" />
+                            <Input
+                                placeholder="Quick search..."
+                                value={buildSearchQuery}
+                                onChange={(e) => updateUrl('query', e.target.value)}
+                                className="pl-9 w-full sm:w-64 bg-black/20 border-white/10 h-9"
+                            />
+                        </div>
+
+                        <DropdownMenu modal={false}>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="sm" className="glass gap-2 hover:text-primary border-white/10 h-9 bg-black/40 min-w-[140px] justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <SlidersHorizontal className="w-4 h-4" />
+                                        <span>
+                                            {({
+                                                'most-voted': 'Most Voted',
+                                                'recent': 'Recently Added',
+                                                'price-low': 'Price: Low to High',
+                                                'price-high': 'Price: High to Low'
+                                            } as Record<string, string>)[sortBy] || 'Sort By'}
+                                        </span>
+                                    </div>
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="glass-elevated border-white/10">
+                                <DropdownMenuItem
+                                    onClick={() => updateUrl('sortBy', 'most-voted')}
+                                    className={`cursor-pointer ${sortBy === 'most-voted' ? 'bg-primary/20 text-primary' : ''}`}
+                                >
+                                    Most Voted
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => updateUrl('sortBy', 'recent')}
+                                    className={`cursor-pointer ${sortBy === 'recent' ? 'bg-primary/20 text-primary' : ''}`}
+                                >
+                                    Recently Added
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => updateUrl('sortBy', 'price-low')}
+                                    className={`cursor-pointer ${sortBy === 'price-low' ? 'bg-primary/20 text-primary' : ''}`}
+                                >
+                                    Price: Low to High
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => updateUrl('sortBy', 'price-high')}
+                                    className={`cursor-pointer ${sortBy === 'price-high' ? 'bg-primary/20 text-primary' : ''}`}
+                                >
+                                    Price: High to Low
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </div>
 
