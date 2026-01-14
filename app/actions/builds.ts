@@ -121,54 +121,62 @@ export async function createBuildAction(formData: any) {
     }
 
     // 4. Insert Build
-    const generateShortId = () => Math.random().toString(36).substring(2, 9); // 7 chars
+    const generateShortId = () => Math.random().toString(36).substring(2, 9);
 
-    // ... (inside createBuildAction)
+    let attempts = 0;
+    let savedBuild = null;
+    let lastError = null;
 
-    // 4. Insert Build
-    const shortCode = generateShortId();
+    while (attempts < 3 && !savedBuild) {
+        attempts++;
+        const shortCode = generateShortId();
 
-    const { data, error } = await supabase
-        .from("builds")
-        .insert({
-            user_id: targetUserId,
-            // Core
-            title: buildName,
-            description,
-            build_code: buildCode,
-            price: parseInt(avgPrice) || 0,
-            image_url: imageUrl,
-            short_code: shortCode, // NEW
+        const { data, error } = await supabase
+            .from("builds")
+            .insert({
+                user_id: targetUserId,
+                title: buildName,
+                description,
+                build_code: buildCode,
+                price: parseInt(avgPrice) || 0,
+                image_url: imageUrl,
+                short_code: shortCode,
+                weapon_id: weaponData.id,
+                weapon_name: weaponData.name,
+                weapon_image: null,
+                v_recoil_control: stats.v_recoil_control,
+                h_recoil_control: stats.h_recoil_control,
+                ergonomics: stats.ergonomics,
+                weapon_stability: stats.weapon_stability,
+                accuracy: stats.accuracy,
+                hipfire_stability: stats.hipfire_stability,
+                effective_range: stats.effective_range,
+                muzzle_velocity: stats.muzzle_velocity,
+                tags: processedTags,
+                status: "pending",
+            })
+            .select()
+            .single();
 
-            // Relation
-            weapon_id: weaponData.id,
-            weapon_name: weaponData.name,
-            weapon_image: null,
+        if (!error && data) {
+            savedBuild = data;
+        } else if (error?.code === '23505' && error?.message?.includes('short_code')) {
+            // Collision detected, retrying...
+            console.warn("Short code collision detected, retrying...");
+            lastError = error;
+        } else {
+            // Other error
+            console.error("Create Build Error:", error);
+            return { success: false, error: error?.message || "Unknown db error" };
+        }
+    }
 
-            // Stats (Flattened)
-            v_recoil_control: stats.v_recoil_control,
-            h_recoil_control: stats.h_recoil_control,
-            ergonomics: stats.ergonomics,
-            weapon_stability: stats.weapon_stability,
-            accuracy: stats.accuracy,
-            hipfire_stability: stats.hipfire_stability,
-            effective_range: stats.effective_range,
-            muzzle_velocity: stats.muzzle_velocity,
-
-            // Meta
-            tags: processedTags,
-            status: "pending",
-        })
-        .select()
-        .single();
-
-    if (error) {
-        console.error("Create Build Error:", error);
-        return { success: false, error: error.message };
+    if (!savedBuild) {
+        return { success: false, error: "Failed to generate unique ID after multiple attempts. Please try again." };
     }
 
     revalidatePath("/builds");
-    return { success: true, buildId: data.id, shortCode: data.short_code };
+    return { success: true, buildId: savedBuild.id, shortCode: savedBuild.short_code };
 }
 
 // GET BUILDS (with filters)
