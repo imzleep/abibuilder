@@ -1,19 +1,20 @@
-
 import { getStreamersAction } from "@/app/actions/admin";
 import Link from "next/link";
 import StreamerAvatarEditor from "@/components/admin/StreamerAvatarEditor";
 import StreamerLinker from "@/components/admin/StreamerLinker";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 export default async function AdminPage() {
     // Strict Admin Check
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) redirect("/login");
+
+    // Using notFound() to hide existence of admin panel
+    if (!user) notFound();
 
     const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
-    if (!profile?.is_admin) redirect("/");
+    if (!profile?.is_admin) notFound();
 
     const streamers = await getStreamersAction();
 

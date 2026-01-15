@@ -1,7 +1,6 @@
-
 import { getPendingBuilds } from "@/app/actions/admin";
 import { createClient } from "@/lib/supabase/server";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import PendingBuildsList from "@/components/admin/PendingBuildsList";
 
 async function checkModerator() {
@@ -22,7 +21,8 @@ async function checkModerator() {
 export default async function ModeratorPage() {
     const isAuthorized = await checkModerator();
     if (!isAuthorized) {
-        redirect("/");
+        // Hide page from unauthorized users
+        notFound();
     }
 
     const pendingBuilds = await getPendingBuilds();
