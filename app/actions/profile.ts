@@ -437,84 +437,96 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
 
     // --- EXECUTE ---
 
-    const { data: rawData, error, count } = await query.range(from, to);
+    // --- EXECUTE ---
 
-    if (error) {
-        console.error("User bookmarks error:", error);
+    try {
+        const { data: rawData, error, count } = await query.range(from, to);
+
+        if (error) {
+            console.error("User bookmarks error:", error);
+            return { builds: [], totalCount: 0 };
+        }
+
+        // Need to cast rawData which contains nested builds
+        const data = rawData.map((item: any) => item.builds); // Extract builds from bookmarks
+
+        // Fetch user specific interactions for these bookmarked builds (specifically votes)
+        let userVotes: any[] = [];
+
+        // Check Permissions
+        let isAdmin = false;
+        let isMod = false;
+        if (user) {
+            // Re-fetch profile for admin check
+            const { data: profile } = await supabase.from("profiles").select("is_admin, is_moderator").eq("id", user.id).single();
+            isAdmin = profile?.is_admin || false;
+            isMod = profile?.is_moderator || false;
+
+            if (data.length > 0) {
+                // Defensive mapping for IDs
+                const buildIds = data.map((item: any) => {
+                    let b = Array.isArray(item) ? item[0] : item;
+                    return b ? b.id : null;
+                }).filter((id: any) => id !== null);
+
+                if (buildIds.length > 0) {
+                    const votesRes = await supabase.from("build_votes").select("build_id, vote_type").eq("user_id", user.id).in("build_id", buildIds);
+                    userVotes = votesRes.data || [];
+                }
+            }
+        }
+
+        // Map nested build data
+        const builds = data.map((item: any) => {
+            // Defensive checks
+            let b = Array.isArray(item) ? item[0] : item;
+            if (!b) return null;
+
+            const myVote = userVotes.find(v => v.build_id === b.id)?.vote_type || null;
+            const canDelete = user ? (user.id === b.user_id || isAdmin || isMod) : false;
+
+            // Dynamic Tag Injection for Streamers
+            let displayTags = b.tags || [];
+            const profileData = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
+
+            if (profileData?.is_streamer && !displayTags.includes("Streamer Build")) {
+                displayTags = [...displayTags, "Streamer Build"];
+            }
+
+            return {
+                id: b.id,
+                title: b.title || b.weapon?.name || b.weapon_name,
+                weaponName: b.weapon?.name || b.weapon_name,
+                weaponImage: b.weapon_image || b.image_url,
+                price: b.price,
+                buildCode: b.build_code,
+                stats: {
+                    v_recoil_control: b.v_recoil_control,
+                    h_recoil_control: b.h_recoil_control,
+                    ergonomics: b.ergonomics,
+                    weapon_stability: b.weapon_stability,
+                    accuracy: b.accuracy,
+                    hipfire_stability: b.hipfire_stability,
+                    effective_range: b.effective_range,
+                    muzzle_velocity: b.muzzle_velocity,
+                },
+                tags: displayTags,
+                upvotes: b.upvotes,
+                downvotes: b.downvotes,
+                author: profileData?.username || "Unknown",
+                created_at: b.created_at,
+                is_bookmarked: true, // It is in bookmarks list
+                user_vote: myVote,
+                can_delete: canDelete,
+                short_code: b.short_code // NEW
+            };
+        }).filter((item) => item !== null) as WeaponBuild[];
+
+        return { builds, totalCount: count || 0 };
+    } catch (e) {
+        console.error("CRITICAL ERROR in getUserBookmarkedBuilds:", e);
         return { builds: [], totalCount: 0 };
     }
-
-    // Need to cast rawData which contains nested builds
-    const data = rawData.map((item: any) => item.builds); // Extract builds from bookmarks
-
-    // Fetch user specific interactions for these bookmarked builds (specifically votes)
-    let userVotes: any[] = [];
-
-    // Check Permissions
-    let isAdmin = false;
-    let isMod = false;
-    if (user) {
-        // Re-fetch profile for admin check
-        const { data: profile } = await supabase.from("profiles").select("is_admin, is_moderator").eq("id", user.id).single();
-        isAdmin = profile?.is_admin || false;
-        isMod = profile?.is_moderator || false;
-
-        if (data.length > 0) {
-            const buildIds = data.map((item: any) => item.builds.id);
-            const votesRes = await supabase.from("build_votes").select("build_id, vote_type").eq("user_id", user.id).in("build_id", buildIds);
-            userVotes = votesRes.data || [];
-        }
-    }
-
-    // Map nested build data
-    // Map nested build data
-    const builds = data.map((b: any) => {
-        // Defensive checks
-        if (!b) return null;
-        if (Array.isArray(b)) b = b[0];
-        if (!b) return null;
-
-        const myVote = userVotes.find(v => v.build_id === b.id)?.vote_type || null;
-        const canDelete = user ? (user.id === b.user_id || isAdmin || isMod) : false;
-
-        // Dynamic Tag Injection for Streamers
-        let displayTags = b.tags || [];
-        const profileData = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
-
-        if (profileData?.is_streamer && !displayTags.includes("Streamer Build")) {
-            displayTags = [...displayTags, "Streamer Build"];
-        }
-
-        return {
-            id: b.id,
-            title: b.title || b.weapon?.name || b.weapon_name,
-            weaponName: b.weapon?.name || b.weapon_name,
-            weaponImage: b.weapon_image || b.image_url,
-            price: b.price,
-            buildCode: b.build_code,
-            stats: {
-                v_recoil_control: b.v_recoil_control,
-                h_recoil_control: b.h_recoil_control,
-                ergonomics: b.ergonomics,
-                weapon_stability: b.weapon_stability,
-                accuracy: b.accuracy,
-                hipfire_stability: b.hipfire_stability,
-                effective_range: b.effective_range,
-                muzzle_velocity: b.muzzle_velocity,
-            },
-            tags: displayTags,
-            upvotes: b.upvotes,
-            downvotes: b.downvotes,
-            author: profileData?.username || "Unknown",
-            created_at: b.created_at,
-            is_bookmarked: true, // It is in bookmarks list
-            user_vote: myVote,
-            can_delete: canDelete,
-            short_code: b.short_code // NEW
-        };
-    }).filter((item) => item !== null) as WeaponBuild[];
-
-    return { builds, totalCount: count || 0 };
 }
 
 export async function updateProfileAction(username: string, displayName: string, avatarUrl: string, bio: string) {
