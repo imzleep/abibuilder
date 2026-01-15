@@ -512,7 +512,7 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
             can_delete: canDelete,
             short_code: b.short_code // NEW
         };
-    }).filter((item): item is WeaponBuild => item !== null);
+    }).filter((item) => item !== null) as WeaponBuild[];
 
     return { builds, totalCount: count || 0 };
 }
