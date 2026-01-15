@@ -26,9 +26,12 @@ export default function Footer() {
                         <Link href="/upload" className="hover:text-primary transition-colors">
                             Upload
                         </Link>
-                        <a href="mailto:contact@zleep.dev" className="hover:text-primary transition-colors">
+                        <Link href="/media-kit" className="hover:text-primary transition-colors">
+                            Media Kit
+                        </Link>
+                        <Link href="/contact" className="hover:text-primary transition-colors">
                             Contact
-                        </a>
+                        </Link>
                         <a href="https://buymeacoffee.com/zleepdev" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition-colors text-yellow-500 font-semibold">
                             Support ❤️
                         </a>
