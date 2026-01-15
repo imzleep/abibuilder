@@ -469,7 +469,11 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
     // Map nested build data
     // Map nested build data
     const builds = data.map((b: any) => {
-        // b is already the build object
+        // Defensive checks
+        if (!b) return null;
+        if (Array.isArray(b)) b = b[0];
+        if (!b) return null;
+
         const myVote = userVotes.find(v => v.build_id === b.id)?.vote_type || null;
         const canDelete = user ? (user.id === b.user_id || isAdmin || isMod) : false;
 
@@ -508,7 +512,7 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
             can_delete: canDelete,
             short_code: b.short_code // NEW
         };
-    });
+    }).filter((item): item is WeaponBuild => item !== null);
 
     return { builds, totalCount: count || 0 };
 }
