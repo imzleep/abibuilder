@@ -467,8 +467,9 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
     }
 
     // Map nested build data
-    const builds = data.map((item: any) => {
-        const b = item.builds;
+    // Map nested build data
+    const builds = data.map((b: any) => {
+        // b is already the build object
         const myVote = userVotes.find(v => v.build_id === b.id)?.vote_type || null;
         const canDelete = user ? (user.id === b.user_id || isAdmin || isMod) : false;
 
