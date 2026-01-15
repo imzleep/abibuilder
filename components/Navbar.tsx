@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, LogIn, LogOut, Search, Coffee, User as UserIcon } from "lucide-react";
+import { Menu, X, LogIn, LogOut, Search, Coffee, User as UserIcon, Shield, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -76,15 +76,11 @@ export default function Navbar({ user, profile }: NavbarProps) {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Builds", href: "/builds" },
+    { name: "Randomizer", href: "/randomizer" },
     { name: "Upload Build", href: "/upload", highlight: true },
   ];
 
-  if (profile?.is_admin) {
-    navLinks.push({ name: "Admin Panel", href: "/admin", highlight: false });
-  }
-  if (profile?.is_moderator || profile?.is_admin) {
-    navLinks.push({ name: "Mod Panel", href: "/moderator", highlight: false });
-  }
+
 
   // Clean up Upload link highlight to avoid double highlight if we want
   // But let's keep Upload Highlighted as Primary Call to Action for users.
@@ -231,6 +227,21 @@ export default function Navbar({ user, profile }: NavbarProps) {
                   >
                     <LogOut className="w-5 h-5" />
                   </button>
+
+                  {(profile?.is_admin || profile?.is_moderator) && (
+                    <div className="flex items-center gap-1 border-l border-white/10 pl-3">
+                      {profile?.is_admin && (
+                        <Link href="/admin" className="p-2 hover:bg-white/5 rounded-lg text-text-secondary hover:text-primary transition-colors" title="Admin Panel">
+                          <ShieldAlert className="w-5 h-5" />
+                        </Link>
+                      )}
+                      {(profile?.is_admin || profile?.is_moderator) && (
+                        <Link href="/moderator" className="p-2 hover:bg-white/5 rounded-lg text-text-secondary hover:text-blue-400 transition-colors" title="Mod Panel">
+                          <Shield className="w-5 h-5" />
+                        </Link>
+                      )}
+                    </div>
+                  )}
                 </div>
               ) : (
                 // Logged out view: Login button

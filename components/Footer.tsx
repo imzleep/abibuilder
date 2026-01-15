@@ -29,6 +29,9 @@ export default function Footer() {
                         <Link href="/media-kit" className="hover:text-primary transition-colors">
                             Media Kit
                         </Link>
+                        <Link href="/randomizer" className="hover:text-primary transition-colors">
+                            Randomizer
+                        </Link>
                         <Link href="/contact" className="hover:text-primary transition-colors">
                             Contact
                         </Link>
