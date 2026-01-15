@@ -95,12 +95,18 @@ export async function generateMetadata(
   const description = profile.bio || `Check out ${profile.username}'s weapon builds on ABI Builder.`;
 
   return {
-    title: `${profile.username}'s Builds | ABI Builder`,
+    title: `${profile.username}'s Arena Breakout Builds & Loadouts | ABI Builder`,
     description: description.substring(0, 160),
     openGraph: {
-      title: `${profile.username}'s Profile`,
+      title: `${profile.username}'s Arena Breakout Profile | ABI Builder`,
       description: description,
-      images: [{ url: profile.avatar_url || "/og-image.jpg" }]
+      images: [{ url: profile.avatar_url || "/logo.png" }]
+    },
+    twitter: {
+      card: "summary",
+      title: `${profile.username}'s Arena Breakout Profile`,
+      description: description,
+      images: [profile.avatar_url || "/logo.png"],
     }
   };
 }

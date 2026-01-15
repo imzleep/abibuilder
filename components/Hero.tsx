@@ -84,11 +84,12 @@ export default function Hero({ stats: inputStats }: HeroProps) {
         <div className="flex flex-col items-center justify-center mb-8 animate-fade-in">
           <img
             src="/logo.png"
-            alt="ABI Builder Logo"
+            alt="ABI Builder - Arena Breakout Infinite Builds Logo"
             className="w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 object-contain mb-6 drop-shadow-[0_0_25px_rgba(250,189,0,0.2)]"
           />
           <h1 className="font-display font-bold text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
             ABI <span className="text-gradient">Builder</span>
+            <span className="sr-only">Arena Breakout Infinite Builds</span>
           </h1>
         </div>
 

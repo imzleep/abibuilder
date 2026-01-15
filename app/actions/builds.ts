@@ -548,6 +548,7 @@ export async function getBuildAction(buildId: string) {
         id: data.id,
         title: data.title || data.weapon_name,
         weaponName: data.weapon_name,
+        image_url: data.image_url,
         weaponImage: data.weapon_image || data.image_url,
         price: data.price,
         buildCode: data.build_code,

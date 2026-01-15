@@ -25,12 +25,12 @@ const rajdhani = Rajdhani({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://abibuilder.com"), // Update this with your actual domain when live
+  metadataBase: new URL("https://abibuilder.com"),
   title: {
-    default: "ABI Builder - Arena Breakout: Infinite Gun Database",
-    template: "%s | ABI Builder",
+    default: "ABI Builder - Arena Breakout Infinite Gun Database & Meta Loadouts",
+    template: "%s | ABI Builder - Arena Breakout Infinite",
   },
-  description: "The ultimate weapon loadout database for Arena Breakout: Infinite. Build, share, and discover the best gun configurations with detailed stats and community voting.",
+  description: "The ultimate weapon loadout database for Arena Breakout: Infinite. Build, share, and discover the meta gun configurations with detailed stats and community voting.",
   keywords: [
     "Arena Breakout",
     "Arena Breakout Infinite",
@@ -59,10 +59,10 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-image.jpg", // Make sure to add an og-image.jpg to public folder later
+        url: "/logo.png",
         width: 1200,
         height: 630,
-        alt: "ABI Builder Preview",
+        alt: "ABI Builder - Arena Breakout Infinite",
       },
     ],
   },
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
     title: "ABI Builder - Arena Breakout: Infinite Gun Database",
     description: "Build, share, and discover the best weapon loadouts for Arena Breakout: Infinite.",
     creator: "@zleepdev", // Update if you have a handle
-    images: ["/og-image.jpg"],
+    images: ["/logo.png"],
   },
   icons: {
     icon: "/logo.png",

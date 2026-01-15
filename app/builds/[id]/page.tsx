@@ -29,14 +29,14 @@ export async function generateMetadata(
     const build = result.build;
 
     return {
-        title: `${build.title} - ${build.weaponName} Build by ${build.author}`,
-        description: build.description || `Check out this ${build.weaponName} loadout on ABI Builder. Stats: V.Recoil ${build.stats.v_recoil_control}, Ergonomics ${build.stats.ergonomics}.`,
+        title: `${build.weaponName} Meta Build: ${build.title} by ${build.author} | Arena Breakout Infinite`,
+        description: build.description || `Best ${build.weaponName} loadout for Arena Breakout Infinite. Stats: V.Recoil ${build.stats.v_recoil_control}, Ergonomics ${build.stats.ergonomics}.`,
         openGraph: {
-            title: `${build.title} | ABI Builder`,
-            description: `Best ${build.weaponName} build by ${build.author}. Price: $${build.price}`,
+            title: `${build.weaponName} Meta Build: ${build.title} | ABI Builder`,
+            description: `Check out this ${build.weaponName} loadout by ${build.author}. Price: $${build.price.toLocaleString()}`,
             images: [
                 {
-                    url: build.weaponImage || "/og-image.jpg",
+                    url: build.image_url || "/logo.png",
                     width: 1200,
                     height: 630,
                 },
@@ -44,9 +44,9 @@ export async function generateMetadata(
         },
         twitter: {
             card: "summary_large_image",
-            title: `${build.title} | ABI Builder`,
+            title: `${build.weaponName} Build: ${build.title}`,
             description: `Check out this ${build.weaponName} loadout by ${build.author}.`,
-            images: [build.weaponImage || "/og-image.jpg"],
+            images: [build.image_url || "/logo.png"],
         },
     };
 }
