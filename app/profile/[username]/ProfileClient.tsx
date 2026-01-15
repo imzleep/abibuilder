@@ -325,6 +325,7 @@ export default function ProfileClient({
                                                     onChange={(e) => {
                                                         const val = e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, '');
                                                         setUsername(val);
+                                                        setDisplayName(e.target.value); // Sync display name initially
                                                         checkUsername(val);
                                                     }}
                                                     className={`pl-8 bg-black/20 ${usernameAvailable === false ? "border-red-500" : "border-white/10"}`}
@@ -369,6 +370,26 @@ export default function ProfileClient({
                                             })()}
                                             {username !== profile.username && usernameAvailable === false && (
                                                 <p className="text-xs text-red-500 mt-1">Username is already taken.</p>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label htmlFor="displayName">Display Name</Label>
+                                            <Input
+                                                id="displayName"
+                                                value={displayName}
+                                                onChange={(e) => setDisplayName(e.target.value)}
+                                                className={`bg-black/20 ${displayName.toLowerCase() !== username ? "border-amber-500" : "border-white/10"}`}
+                                                maxLength={20}
+                                            />
+                                            {displayName.toLowerCase() !== username ? (
+                                                <p className="text-xs text-amber-500 mt-1">
+                                                    Display name must match username (case-insensitive).
+                                                </p>
+                                            ) : (
+                                                <p className="text-xs text-text-secondary mt-1">
+                                                    You can capitalize your name (Twitch style).
+                                                </p>
                                             )}
                                         </div>
                                         <div className="space-y-2">
