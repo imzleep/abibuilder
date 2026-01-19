@@ -9,6 +9,7 @@ export const maps: RandomizerItem[] = [
     { name: "Northridge", type: "t2", weight: 20 },
     { name: "Armory", type: "t4", weight: 40 },
     { name: "TV Station", type: "t5", weight: 40 },
+    { name: "Airport", type: "t3", weight: 40 },
 ];
 
 export const helmets: RandomizerItem[] = [
