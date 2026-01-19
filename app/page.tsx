@@ -10,8 +10,18 @@ import { TrendingUp } from "lucide-react";
 import { getBuildsAction } from "@/app/actions/builds";
 import { getStreamersAction } from "@/app/actions/admin";
 import { getSiteStats } from "@/app/actions/stats";
+import type { Metadata } from "next";
 
 // Reusing this action for public fetch
+
+export const metadata: Metadata = {
+  title: "ABI Builder - Arena Breakout Infinite Tools & Randomizer",
+  description: "The #1 Tool for Arena Breakout Infinite. Features: ABI Randomizer, Weapon Meta Builds, Gun Builder, and Streamer Loadouts.",
+  keywords: ["abibuilder", "abi builder", "arena breakout tools", "abi randomizer", "abi meta builds", "arena breakout infinite randomizer"],
+  alternates: {
+    canonical: 'https://abibuilder.com',
+  },
+};
 
 export default async function Home() {
 

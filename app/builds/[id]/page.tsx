@@ -31,6 +31,24 @@ export async function generateMetadata(
     return {
         title: `${build.weaponName} Meta Build: ${build.title} by ${build.author} | Arena Breakout Infinite`,
         description: build.description || `Best ${build.weaponName} loadout for Arena Breakout Infinite. Stats: V.Recoil ${build.stats.v_recoil_control}, Ergonomics ${build.stats.ergonomics}.`,
+        keywords: [
+            build.weaponName,
+            `${build.weaponName} build`,
+            `${build.weaponName} meta`,
+            `${build.weaponName} meta build`,
+            `${build.weaponName} budget build`,
+            `${build.weaponName} loadout`,
+            `${build.weaponName} best attachment`,
+            `${build.author} ${build.weaponName} build`,
+            `${build.author} ${build.weaponName}`,
+            `${build.author} meta`,
+            "Arena Breakout Infinite",
+            "ABI",
+            "Meta Loadout",
+            "Gunsmith",
+            build.title,
+            build.author
+        ],
         openGraph: {
             title: `${build.weaponName} Meta Build: ${build.title} | ABI Builder`,
             description: `Check out this ${build.weaponName} loadout by ${build.author}. Price: $${build.price.toLocaleString()}`,

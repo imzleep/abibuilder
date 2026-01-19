@@ -41,7 +41,18 @@ export const metadata: Metadata = {
     "FPS",
     "Tarkov Clone",
     "Meta Builds",
-    "Budget Builds"
+    "Budget Builds",
+    "abirandomizer",
+    "arena breakout randomizer",
+    "gear randomizer",
+    "loadout randomizer",
+    "abi meta builds",
+    "best abi weapons",
+    "arena breakout infinite gun builder",
+    // WEAPONS
+    "H416", "M4A1", "FAL", "AK-74N", "AK-12", "P-90", "SJ16", "M110", "MK14", "VSS",
+    "M24", "AN-94", "M16", "AEK", "ACE31", "G3", "MPX", "PP19", "USAS12", "T03", "T951",
+    "h416 build", "m4a1 meta", "fal loadout", "sj16 build", "ak-74n modding"
   ],
   authors: [{ name: "Zleep", url: "https://zleep.dev" }],
   creator: "Zleep",
@@ -104,6 +115,38 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${rajdhani.variable}`} suppressHydrationWarning>
       <body className="font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "WebSite",
+                  "name": "ABI Builder",
+                  "url": "https://abibuilder.com",
+                  "potentialAction": {
+                    "@type": "SearchAction",
+                    "target": "https://abibuilder.com/builds?query={search_term_string}",
+                    "query-input": "required name=search_term_string"
+                  }
+                },
+                {
+                  "@type": "SoftwareApplication",
+                  "name": "ABI Builder",
+                  "applicationCategory": "GameTool",
+                  "operatingSystem": "Web",
+                  "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                  },
+                  "description": "The ultimate Arena Breakout Infinite weapon builder and randomizer tool."
+                }
+              ]
+            })
+          }}
+        />
         <GoogleAnalytics gaId="G-1KYKECRNYK" />
         <Navbar user={user} profile={profile} />
         {children}
