@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Filter, ChevronDown, Check, RefreshCw } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getWeaponsAction } from "@/app/actions/builds"; // Assuming this exists or similar action
-import { RandomizerItem } from "@/lib/randomizer-data";
+import { RandomizerItem, maps } from "@/lib/randomizer-data";
 
 // Define Tier Labels
 const ARMOR_TIERS = [1, 2, 3, 4, 5, 6];
@@ -26,6 +26,7 @@ interface FilterState {
     excludedWeapons: string[]; // Names of excluded weapons
     excludedArmorTiers: number[];
     excludedHelmetTiers: number[];
+    excludedMaps: string[];
 }
 
 interface RandomizerFiltersProps {
@@ -44,6 +45,7 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
     const [excludedWeapons, setExcludedWeapons] = useState<string[]>([]);
     const [excludedArmorTiers, setExcludedArmorTiers] = useState<number[]>([]);
     const [excludedHelmetTiers, setExcludedHelmetTiers] = useState<number[]>([]);
+    const [excludedMaps, setExcludedMaps] = useState<string[]>([]);
 
     // Automatically close if disabled (optional, but good UX if spinning)
     useEffect(() => {
@@ -61,7 +63,7 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
                 setAllWeapons(weapons);
 
                 // Initial broadcast
-                broadcastFilters(weapons, [], [], []);
+                broadcastFilters(weapons, [], [], [], []);
             } catch (error) {
                 console.error("Failed to load weapons", error);
             } finally {
@@ -76,20 +78,19 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
         currentWeapons: any[],
         exclWeapons: string[],
         exclArmor: number[],
-        exclHelmet: number[]
+        exclHelmet: number[],
+        exclMaps: string[]
     ) => {
         // Map available weapons to RandomizerItem format
         // Filter out excluded ones
-        const filteredRandomizerWeapons: RandomizerItem[] = currentWeapons
-            .filter(w => !exclWeapons.includes(w.value)) // value is slug or unique id
-            .map(w => ({
-                name: w.label,
-                type: 't3', // Default random tier for now since DB doesn't have tiers? Or randomized?
-                // Ideally we assign tier based on price/meta but for now let's just make them colorful.
-                // Or randomized type per item to make the slot machine colorful?
-                // Let's assign random 't1'...'t5' hash based on name length for consistent colors
-                // Or just 't3' (Purple) for all standard guns.
-            }));
+        // Filter Logic with Fallback
+        let activeSource = currentWeapons.filter(w => !exclWeapons.includes(w.value));
+        if (activeSource.length === 0) activeSource = currentWeapons;
+
+        const filteredRandomizerWeapons: RandomizerItem[] = activeSource.map(w => ({
+            name: w.label,
+            type: 't3',
+        }));
 
         // Fix for coloring: Let's distribute types pseudo-randomly for visual flare
         const coloredWeapons = filteredRandomizerWeapons.map((w, i) => ({
@@ -100,7 +101,8 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
         onFilterChange({
             excludedWeapons: exclWeapons,
             excludedArmorTiers: exclArmor,
-            excludedHelmetTiers: exclHelmet
+            excludedHelmetTiers: exclHelmet,
+            excludedMaps: exclMaps
         }, coloredWeapons);
     };
 
@@ -111,7 +113,7 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
             : [...excludedWeapons, slug];
 
         setExcludedWeapons(newExcluded);
-        broadcastFilters(allWeapons, newExcluded, excludedArmorTiers, excludedHelmetTiers);
+        broadcastFilters(allWeapons, newExcluded, excludedArmorTiers, excludedHelmetTiers, excludedMaps);
     };
 
     const toggleCategory = (categorySlug: string) => {
@@ -132,7 +134,7 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
         }
 
         setExcludedWeapons(newExcluded);
-        broadcastFilters(allWeapons, newExcluded, excludedArmorTiers, excludedHelmetTiers);
+        broadcastFilters(allWeapons, newExcluded, excludedArmorTiers, excludedHelmetTiers, excludedMaps);
     };
 
     const toggleArmorTier = (tier: number) => {
@@ -140,7 +142,7 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
             ? excludedArmorTiers.filter(t => t !== tier)
             : [...excludedArmorTiers, tier];
         setExcludedArmorTiers(newExcluded);
-        broadcastFilters(allWeapons, excludedWeapons, newExcluded, excludedHelmetTiers);
+        broadcastFilters(allWeapons, excludedWeapons, newExcluded, excludedHelmetTiers, excludedMaps);
     };
 
     const toggleHelmetTier = (tier: number) => {
@@ -148,7 +150,15 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
             ? excludedHelmetTiers.filter(t => t !== tier)
             : [...excludedHelmetTiers, tier];
         setExcludedHelmetTiers(newExcluded);
-        broadcastFilters(allWeapons, excludedWeapons, excludedArmorTiers, newExcluded);
+        broadcastFilters(allWeapons, excludedWeapons, excludedArmorTiers, newExcluded, excludedMaps);
+    };
+
+    const toggleMap = (mapName: string) => {
+        const newExcluded = excludedMaps.includes(mapName)
+            ? excludedMaps.filter(m => m !== mapName)
+            : [...excludedMaps, mapName];
+        setExcludedMaps(newExcluded);
+        broadcastFilters(allWeapons, excludedWeapons, excludedArmorTiers, excludedHelmetTiers, newExcluded);
     };
 
 
@@ -301,8 +311,37 @@ export default function RandomizerFilters({ onFilterChange, disabled }: Randomiz
                                 </div>
                             </div>
 
-                        </div>
+                            {/* MAPS */}
+                            <div>
+                                <h3 className="font-display font-bold text-lg text-white border-b border-white/10 pb-2 mb-4">Maps</h3>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {maps.map(map => {
+                                        const isExcluded = excludedMaps.includes(map.name);
+                                        return (
+                                            <button
+                                                key={map.name}
+                                                onClick={() => toggleMap(map.name)}
+                                                className={cn(
+                                                    "flex items-center gap-2 text-xs px-2 py-2 rounded border transition-all truncate text-left",
+                                                    isExcluded
+                                                        ? "border-white/5 bg-zinc-900 text-zinc-600 grayscale"
+                                                        : "border-white/10 bg-zinc-800 text-zinc-300 hover:border-primary/40 hover:text-white"
+                                                )}
+                                            >
+                                                <div className={cn(
+                                                    "w-2 h-2 rounded-full shrink-0",
+                                                    isExcluded ? "bg-zinc-700" : "bg-primary"
+                                                )} />
+                                                <span className={isExcluded ? "line-through opacity-50" : ""}>
+                                                    {map.name}
+                                                </span>
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                            </div>
 
+                        </div>
                     </div>
                 )}
             </div>

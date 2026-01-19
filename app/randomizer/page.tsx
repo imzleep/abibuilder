@@ -24,6 +24,7 @@ export default function RandomizerPage() {
     const [lastMap, setLastMap] = useState<string | null>(null);
 
     // Filtered Data State
+    const [activeMaps, setActiveMaps] = useState<RandomizerItem[]>(maps);
     const [activeWeapons, setActiveWeapons] = useState<RandomizerItem[]>(weapons);
     const [activeArmors, setActiveArmors] = useState<RandomizerItem[]>(bodyArmors);
     const [activeHelmets, setActiveHelmets] = useState<RandomizerItem[]>(helmets);
@@ -55,6 +56,12 @@ export default function RandomizerPage() {
             return !filters.excludedHelmetTiers.includes(tier);
         });
         setActiveHelmets(newHelmets.length > 0 ? newHelmets : helmets);
+
+        // Filter Maps
+        if (filters.excludedMaps) {
+            const newMaps = maps.filter(m => !filters.excludedMaps.includes(m.name));
+            setActiveMaps(newMaps.length > 0 ? newMaps : maps);
+        }
     };
 
     // Initial Strip Content (State to force re-render if needed, but we mostly manipulate DOM for per-spin randomness)
@@ -74,11 +81,11 @@ export default function RandomizerPage() {
 
     // Effect to redraw strips when data changes
     useEffect(() => {
-        drawStrip(mapStripRef.current, maps);
+        drawStrip(mapStripRef.current, activeMaps);
         drawStrip(helmetStripRef.current, activeHelmets, true);
         drawStrip(armorStripRef.current, activeArmors, true);
         drawStrip(weaponStripRef.current, activeWeapons, true);
-    }, [activeHelmets, activeArmors, activeWeapons]);
+    }, [activeMaps, activeHelmets, activeArmors, activeWeapons]);
 
     // Keep Refs to current data for Spin function (closures issue)
     // Actually handleSpin accesses state directly? No, closure will have old state if handleSpin isn't recreated.
@@ -209,7 +216,7 @@ export default function RandomizerPage() {
         setAlarmMode(false);
 
         // 1. Redraw fresh strips
-        drawStrip(mapStripRef.current, maps);
+        drawStrip(mapStripRef.current, activeMaps);
         drawStrip(helmetStripRef.current, activeHelmets, true);
         drawStrip(armorStripRef.current, activeArmors, true);
         drawStrip(weaponStripRef.current, activeWeapons, true);
@@ -221,9 +228,9 @@ export default function RandomizerPage() {
         let mapWinner: RandomizerItem;
         let mapAttempts = 0;
         do {
-            mapWinner = getRandomItem(maps);
+            mapWinner = getRandomItem(activeMaps);
             mapAttempts++;
-        } while (mapWinner.name === lastMap && maps.length > 1 && mapAttempts < 20);
+        } while (mapWinner.name === lastMap && activeMaps.length > 1 && mapAttempts < 20);
         setLastMap(mapWinner.name);
 
         const helmetWinner = getRandomItem(activeHelmets); // Uniform chance
@@ -248,12 +255,12 @@ export default function RandomizerPage() {
                 setAlarmMode(true);
             }, 500);
 
-            spinColumn(mapStripRef.current, maps, 0, mapWinner);
+            spinColumn(mapStripRef.current, activeMaps, 0, mapWinner);
             spinColumn(helmetStripRef.current, activeHelmets, 400, null, true);
             spinColumn(armorStripRef.current, activeArmors, 800, null, true);
             spinColumn(weaponStripRef.current, activeWeapons, 1200, null, true);
         } else {
-            spinColumn(mapStripRef.current, maps, 0, mapWinner);
+            spinColumn(mapStripRef.current, activeMaps, 0, mapWinner);
             spinColumn(helmetStripRef.current, activeHelmets, 400, helmetWinner);
             spinColumn(armorStripRef.current, activeArmors, 800, armorWinner);
             spinColumn(weaponStripRef.current, activeWeapons, 1200, weaponWinner);
