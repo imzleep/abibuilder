@@ -8,6 +8,9 @@ import {
 import { cn } from "@/lib/utils";
 
 // --- CONSTANTS ---
+import RandomizerFilters from "@/components/randomizer/RandomizerFilters";
+
+// --- CONSTANTS ---
 const CARD_HEIGHT = 80;
 const TOTAL_CARDS = 60; // Strip length
 const VISUAL_OFFSET = -5; // Fine-tune centering
@@ -18,12 +21,41 @@ export default function RandomizerPage() {
     const [alarmMode, setAlarmMode] = useState(false);
     const [zthChance, setZthChance] = useState(5);
     const [history, setHistory] = useState<string[]>([]);
+    const [lastMap, setLastMap] = useState<string | null>(null);
+
+    // Filtered Data State
+    const [activeWeapons, setActiveWeapons] = useState<RandomizerItem[]>(weapons);
+    const [activeArmors, setActiveArmors] = useState<RandomizerItem[]>(bodyArmors);
+    const [activeHelmets, setActiveHelmets] = useState<RandomizerItem[]>(helmets);
 
     // --- REFS for Strips ---
     const mapStripRef = useRef<HTMLDivElement>(null);
     const helmetStripRef = useRef<HTMLDivElement>(null);
     const armorStripRef = useRef<HTMLDivElement>(null);
     const weaponStripRef = useRef<HTMLDivElement>(null);
+
+    // Filter Handler
+    const handleFilterChange = (filters: any, validWeapons: RandomizerItem[]) => {
+        // Update Weapons (if valid list provided, else fallback to static)
+        if (validWeapons.length > 0) setActiveWeapons(validWeapons);
+
+        // Map Tiers: t0=1, t1=2, t2=3, t3=4, t4=5, t5=6
+        const tierMap: Record<string, number> = { t0: 1, t1: 2, t2: 3, t3: 4, t4: 5, t5: 6 };
+
+        // Filter Armors
+        const newArmors = bodyArmors.filter(a => {
+            const tier = tierMap[a.type];
+            return !filters.excludedArmorTiers.includes(tier);
+        });
+        setActiveArmors(newArmors.length > 0 ? newArmors : bodyArmors);
+
+        // Filter Helmets
+        const newHelmets = helmets.filter(h => {
+            const tier = tierMap[h.type];
+            return !filters.excludedHelmetTiers.includes(tier);
+        });
+        setActiveHelmets(newHelmets.length > 0 ? newHelmets : helmets);
+    };
 
     // Initial Strip Content (State to force re-render if needed, but we mostly manipulate DOM for per-spin randomness)
     // We will generate random strips on every spin, similar to the original code.
@@ -33,14 +65,29 @@ export default function RandomizerPage() {
         const saved = localStorage.getItem('weaponHistory');
         if (saved) setHistory(JSON.parse(saved));
 
-        // Initial Draw
+        // Initial Draw (Using default statics until filters load, effectively)
         drawStrip(mapStripRef.current, maps);
         drawStrip(helmetStripRef.current, helmets, true);
         drawStrip(armorStripRef.current, bodyArmors, true);
         drawStrip(weaponStripRef.current, weapons, true);
     }, []);
 
+    // Effect to redraw strips when data changes
+    useEffect(() => {
+        drawStrip(mapStripRef.current, maps);
+        drawStrip(helmetStripRef.current, activeHelmets, true);
+        drawStrip(armorStripRef.current, activeArmors, true);
+        drawStrip(weaponStripRef.current, activeWeapons, true);
+    }, [activeHelmets, activeArmors, activeWeapons]);
+
+    // Keep Refs to current data for Spin function (closures issue)
+    // Actually handleSpin accesses state directly? No, closure will have old state if handleSpin isn't recreated.
+    // But handleSpin is created each render? Yes.
+    // But it's used in onClick.
+    // It should be fine.
+
     // --- HELPERS ---
+
     const getWeightedRandom = (items: RandomizerItem[]) => {
         let totalWeight = 0;
         const weightedItems = items.map(item => {
@@ -89,6 +136,7 @@ export default function RandomizerPage() {
     };
 
     const generateCardHtml = (item: RandomizerItem) => {
+        if (!item) return "";
         // Map types to colors
         const colors: Record<string, string> = {
             t0: "text-zinc-500",
@@ -126,6 +174,7 @@ export default function RandomizerPage() {
 
                     const getDiff = () => {
                         const pool = dataset.filter(x => x.name !== winnerItem.name);
+                        if (pool.length === 0) return winnerItem;
                         return pool[Math.floor(Math.random() * pool.length)];
                     };
 
@@ -149,6 +198,11 @@ export default function RandomizerPage() {
     };
 
 
+    const getRandomItem = (items: RandomizerItem[]) => {
+        if (!items || items.length === 0) return { name: "None", type: "t0" } as RandomizerItem;
+        return items[Math.floor(Math.random() * items.length)];
+    };
+
     const handleSpin = () => {
         if (isSpinning) return;
         setIsSpinning(true);
@@ -156,21 +210,30 @@ export default function RandomizerPage() {
 
         // 1. Redraw fresh strips
         drawStrip(mapStripRef.current, maps);
-        drawStrip(helmetStripRef.current, helmets, true);
-        drawStrip(armorStripRef.current, bodyArmors, true);
-        drawStrip(weaponStripRef.current, weapons, true);
+        drawStrip(helmetStripRef.current, activeHelmets, true);
+        drawStrip(armorStripRef.current, activeArmors, true);
+        drawStrip(weaponStripRef.current, activeWeapons, true);
 
         // 2. Determine Winners
         const isZeroToHero = Math.random() < (zthChance / 100);
-        const mapWinner = getWeightedRandom(maps);
-        const helmetWinner = getWeightedRandom(helmets);
-        const armorWinner = getWeightedRandom(bodyArmors);
+
+        // Map Logic (Uniform + Anti-Repeat)
+        let mapWinner: RandomizerItem;
+        let mapAttempts = 0;
+        do {
+            mapWinner = getRandomItem(maps);
+            mapAttempts++;
+        } while (mapWinner.name === lastMap && maps.length > 1 && mapAttempts < 20);
+        setLastMap(mapWinner.name);
+
+        const helmetWinner = getRandomItem(activeHelmets); // Uniform chance
+        const armorWinner = getRandomItem(activeArmors);   // Uniform chance
 
         // Weapon Logic (History)
         let weaponWinner: RandomizerItem;
         let attempts = 0;
         do {
-            weaponWinner = getWeightedRandom(weapons);
+            weaponWinner = getRandomItem(activeWeapons); // Uniform chance
             attempts++;
         } while (history.includes(weaponWinner.name) && attempts < 50);
 
@@ -186,14 +249,14 @@ export default function RandomizerPage() {
             }, 500);
 
             spinColumn(mapStripRef.current, maps, 0, mapWinner);
-            spinColumn(helmetStripRef.current, helmets, 400, null, true);
-            spinColumn(armorStripRef.current, bodyArmors, 800, null, true);
-            spinColumn(weaponStripRef.current, weapons, 1200, null, true);
+            spinColumn(helmetStripRef.current, activeHelmets, 400, null, true);
+            spinColumn(armorStripRef.current, activeArmors, 800, null, true);
+            spinColumn(weaponStripRef.current, activeWeapons, 1200, null, true);
         } else {
             spinColumn(mapStripRef.current, maps, 0, mapWinner);
-            spinColumn(helmetStripRef.current, helmets, 400, helmetWinner);
-            spinColumn(armorStripRef.current, bodyArmors, 800, armorWinner);
-            spinColumn(weaponStripRef.current, weapons, 1200, weaponWinner);
+            spinColumn(helmetStripRef.current, activeHelmets, 400, helmetWinner);
+            spinColumn(armorStripRef.current, activeArmors, 800, armorWinner);
+            spinColumn(weaponStripRef.current, activeWeapons, 1200, weaponWinner);
         }
 
         setTimeout(() => {
@@ -209,7 +272,7 @@ export default function RandomizerPage() {
 
             {/* Alarm Overlay */}
             {alarmMode && (
-                <div className="absolute inset-0 z-0 pointer-events-none animate-pulse bg-red-900/10 shadow-[inset_0_0_100px_rgba(255,0,0,0.2)]" />
+                <div className="fixed inset-0 z-0 pointer-events-none animate-pulse bg-red-900/10 shadow-[inset_0_0_100px_rgba(255,0,0,0.2)]" />
             )}
 
             <div className="relative z-10 w-full max-w-5xl px-4 flex flex-col items-center gap-8">
@@ -222,6 +285,8 @@ export default function RandomizerPage() {
                     )}>
                         {alarmMode ? "ZERO TO HERO" : "RNG LOADOUTS"}
                     </h1>
+
+                    <RandomizerFilters onFilterChange={handleFilterChange} disabled={isSpinning} />
 
                     {/* Rules Box */}
                     <div className="bg-[#111] border border-white/10 rounded-xl p-6 text-left shadow-lg relative overflow-hidden group">
@@ -238,22 +303,14 @@ export default function RandomizerPage() {
                             <span className="text-primary font-bold ml-1">Weapon builds are up to you.</span>
                         </p>
 
-                        <div className="bg-black/40 rounded-lg p-3 border border-white/5 space-y-2">
-                            <p className="text-xs font-bold text-white uppercase tracking-wider mb-1 opacity-70">Active Rules of Engagement:</p>
-                            <ul className="text-sm text-text-secondary space-y-1 list-none pl-1">
-                                <li className="flex items-center gap-2">
-                                    No Red Ammo
-                                </li>
-                                <li className="flex items-center gap-2">
-                                    Solo Forbidden Only
-                                </li>
-                            </ul>
-                        </div>
+                        <p className="text-text-secondary mb-4 text-sm leading-relaxed">
+                            <span className="text-white font-display font-bold block mb-1">Customize your odds.</span>
+                            You can filter specific items from the pool using the Advanced Filters menu above.
+                        </p>
 
                         {alarmMode && (
                             <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded text-red-500 font-bold text-center animate-pulse flex flex-col">
                                 <span className="text-lg">⚠ ZERO TO HERO PROTOCOL ACTIVE ⚠</span>
-                                <span className="text-xs opacity-80 uppercase tracking-widest">Forbidden Zone Entry Required</span>
                             </div>
                         )}
                     </div>
@@ -304,13 +361,13 @@ export default function RandomizerPage() {
                     </button>
 
                     <div className="flex items-center gap-4 bg-[#111] border border-white/10 rounded-full px-6 py-2">
-                        <span className="font-display text-text-secondary text-sm">ZTH CHANCE %:</span>
+                        <span className="font-display text-text-secondary text-sm">ZERO TO HERO CHANCE %:</span>
                         <input
                             type="number"
                             min="5"
                             max="100"
                             value={zthChance}
-                            onChange={(e) => setZthChance(Math.max(5, Number(e.target.value)))}
+                            onChange={(e) => setZthChance(Math.min(100, Math.max(5, Number(e.target.value))))}
                             className="bg-transparent border-b-2 border-primary text-primary font-display text-xl w-12 text-center focus:outline-none"
                         />
                     </div>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Br1mzy Zero to Hero Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Roboto:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* --- GLOBAL STYLES --- */
+        body {
+            background-color: #0d0d0d;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #ecf0f1;
+            overflow: hidden;
+            background-image:
+                linear-gradient(rgba(10, 10, 10, 0.95), rgba(10, 10, 10, 0.95)),
+                url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            transition: background-color 0.5s;
+        }
+
+        /* --- ZERO TO HERO ALARM MODE --- */
+        body.alarm-mode {
+            background-color: #2a0000;
+        }
+
+        body.alarm-mode h1 {
+            color: #ff0000;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            animation: pulse 0.5s infinite alternate;
+        }
+
+        body.alarm-mode .slot-machine {
+            border-color: #ff0000;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+        }
+
+        body.alarm-mode .payline {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.1);
+            /* Biraz daha şeffaf yaptım */
+        }
+
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+                text-shadow: 0 0 10px red;
+            }
+
+            to {
+                transform: scale(1.05);
+                text-shadow: 0 0 30px red;
+            }
+        }
+
+        /* --- HEADER --- */
+        .header-container {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #d4a017;
+            padding-bottom: 10px;
+            width: 90%;
+            max-width: 800px;
+            transition: border-color 0.5s;
+        }
+
+        h1 {
+            font-family: 'Black Ops One', cursive;
+            color: #d4a017;
+            font-size: 48px;
+            margin: 0;
+            letter-spacing: 3px;
+            text-shadow: 0 0 15px rgba(212, 160, 23, 0.6);
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #888;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* --- MACHINE FRAME --- */
+        .slot-machine {
+            display: flex;
+            gap: 12px;
+            padding: 25px;
+            background: #151515;
+            border: 3px solid #444;
+            border-top: 3px solid #d4a017;
+            border-radius: 8px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9);
+            position: relative;
+            transition: all 0.5s;
+        }
+
+        /* --- PAYLINE (SARI ÇERÇEVE) FIX --- */
+        .payline {
+            position: absolute;
+            top: 50%;
+            left: -15px;
+            right: -15px;
+            height: 80px;
+            transform: translateY(-50%);
+            border: 3px solid #ffba08;
+            /* Çerçeveyi kalınlaştırdım */
+            box-sizing: border-box;
+            /* BU ÇOK ÖNEMLİ: Çerçeveyi içe doğru verir, taşmayı engeller */
+            background: rgba(255, 186, 8, 0.05);
+            box-shadow: 0 0 15px rgba(255, 186, 8, 0.2) inset;
+            border-radius: 4px;
+            z-index: 10;
+            /* Kartların üstünde dursun */
+            pointer-events: none;
+            transition: all 0.5s;
+        }
+
+        .payline::before,
+        .payline::after {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            /* Okları tam ortalar */
+            color: inherit;
+            font-size: 24px;
+            content: "►";
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .payline::after {
+            content: "◄";
+            right: -30px;
+            left: auto;
+        }
+
+        .payline::before {
+            left: -30px;
+        }
+
+        .col-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 150px;
+        }
+
+        .label {
+            font-family: 'Black Ops One', cursive;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .window {
+            width: 100%;
+            height: 240px;
+            overflow: hidden;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            position: relative;
+            box-shadow: inset 0 0 30px #000;
+            /* İç gölgeyi artırdım */
+        }
+
+        .strip {
+            display: block;
+            position: relative;
+            top: 0;
+            text-align: center;
+            will-change: transform;
+        }
+
+        /* --- CARDS --- */
+        .card {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            border-bottom: 1px solid #1a1a1a;
+            box-sizing: border-box;
+            /* Boyut hesaplamasını sabitler */
+            background: linear-gradient(180deg, #222 0%, #151515 100%);
+            padding: 0 5px;
+            /* Yanlardan hafif boşluk */
+            text-align: center;
+            line-height: 1.1;
+            text-transform: uppercase;
+            /* Font hizalamasını görsel olarak ortalamak için */
+            padding-top: 3px;
+        }
+
+        .card.t0 {
+            color: #7f8c8d;
+        }
+
+        .card.t1 {
+            color: #2ecc71;
+            text-shadow: 0 0 5px rgba(46, 204, 113, 0.2);
+        }
+
+        .card.t2 {
+            color: #3498db;
+            text-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        .card.t3 {
+            color: #9b59b6;
+            text-shadow: 0 0 8px rgba(155, 89, 182, 0.4);
+        }
+
+        .card.t4 {
+            color: #f1c40f;
+            text-shadow: 0 0 10px rgba(241, 196, 15, 0.5);
+        }
+
+        .card.t5 {
+            color: #e74c3c;
+            text-shadow: 0 0 12px rgba(231, 76, 60, 0.6);
+        }
+
+        .card.zth {
+            color: #ff0000;
+            font-family: 'Black Ops One', cursive;
+            font-size: 19px;
+            text-shadow: 0 0 20px red;
+            background: linear-gradient(180deg, #300 0%, #100 100%);
+            border-bottom: 1px solid #500;
+        }
+
+        /* --- CONTROLS --- */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .setting-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #111;
+            padding: 10px 20px;
+            border: 1px solid #333;
+            border-radius: 50px;
+        }
+
+        .setting-label {
+            font-family: 'Black Ops One', cursive;
+            color: #777;
+            font-size: 14px;
+        }
+
+        input[type="number"] {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #d4a017;
+            color: #d4a017;
+            font-family: 'Black Ops One', cursive;
+            font-size: 18px;
+            width: 60px;
+            text-align: center;
+            outline: none;
+        }
+
+        button {
+            padding: 15px 60px;
+            font-family: 'Black Ops One', cursive;
+            font-size: 28px;
+            color: #000;
+            background: linear-gradient(90deg, #d4a017, #f39c12);
+            border: none;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(212, 160, 23, 0.4);
+            transition: all 0.2s;
+            letter-spacing: 2px;
+            z-index: 10;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(90deg, #f1c40f, #e67e22);
+            box-shadow: 0 0 35px rgba(212, 160, 23, 0.7);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background: #333;
+            color: #777;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header-container">
+        <h1 id="mainTitle">BR1MZY</h1>
+        <div class="subtitle" id="subTitle">OPERATION: RNG</div>
+    </div>
+
+    <div class="slot-machine">
+        <div class="payline"></div>
+
+        <div class="col-container">
+            <span class="label">Map</span>
+            <div class="window">
+                <div class="strip" id="strip-map"></div>
+            </div>
+        </div>
+
+        <div class="col-container">
+            <span class="label">Helmet</span>
+            <div class="window">
+                <div class="strip" id="strip-helmet"></div>
+            </div>
+        </div>
+
+        <div class="col-container">
+            <span class="label">Armor</span>
+            <div class="window">
+                <div class="strip" id="strip-armor"></div>
+            </div>
+        </div>
+
+        <div class="col-container">
+            <span class="label">Weapon</span>
+            <div class="window">
+                <div class="strip" id="strip-weapon"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="spinBtn" onclick="spinAll()">START</button>
+
+        <div class="setting-box">
+            <span class="setting-label">ZTH CHANCE %:</span>
+            <input type="number" id="chanceInput" value="5" min="0" max="100">
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const cardHeight = 80;
+        const totalCards = 60; // Strip length
+
+        // YAYIN AYARI: Eğer yazılar çok yukarıda veya aşağıda duruyorsa burayı değiştir.
+        // Pozitif sayı (+) aşağı iter, Negatif sayı (-) yukarı çeker.
+        const visualOffset = -5;
+
+        // --- WEIGHT CONFIGURATION (CHANCE SETTINGS) ---
+        // Higher number = Higher chance
+        const tierWeights = {
+            't0': 5,  // Tier 1 (Low) -> Very Low
+            't1': 10, // Tier 2 (Mid-Low) -> Low
+            't2': 20, // Tier 3 (Mid) -> Moderate
+            't3': 60, // Tier 4 (Mid-High) -> VERY HIGH
+            't4': 60, // Tier 5 (High) -> VERY HIGH
+            't5': 15  // Tier 6 (Top) -> Rare but present
+        };
+
+        // --- DATA POOLS ---
+
+        const maps = [
+            { name: "Farm", type: "t1", weight: 15 },
+            { name: "Northridge", type: "t2", weight: 20 },
+            { name: "Armory", type: "t4", weight: 40 },
+            { name: "TV Station", type: "t5", weight: 40 },
+        ];
+
+        // Extracted from User Images
+        const helmets = [
+            // TIER 1 (t0)
+            { name: "T1 Motorcycle", type: "t0" },
+            { name: "T1 Fireman", type: "t0" },
+            { name: "T1 Safety", type: "t0" },
+
+            // TIER 2 (t1)
+            { name: "T2 R. Steel", type: "t1" },
+            { name: "T2 PAS", type: "t1" },
+            { name: "T2 Retro", type: "t1" },
+            { name: "T2 Riot", type: "t1" },
+
+            // TIER 3 (t2)
+            { name: "T3 SH12", type: "t2" },
+            { name: "T3 F70", type: "t2" },
+            { name: "T3 PAS2", type: "t2" },
+
+            // TIER 4 (t3)
+            { name: "T4 IND Tac", type: "t3" },
+            { name: "T4 KSS Tac", type: "t3" },
+            { name: "T4 KSS2 Tac", type: "t3" },
+            { name: "T4 56K Heli", type: "t3" },
+
+            // TIER 5 (t4)
+            { name: "T5 RSP H.", type: "t4" },
+            { name: "T5 AN95", type: "t4" },
+            { name: "T5 SH M2 Matzka", type: "t4" },
+
+            // TIER 6 (t5)
+            { name: "T6 DOD9 Blast", type: "t5" },
+            { name: "T6 SH65", type: "t5" },
+            { name: "T6 RST Sp.", type: "t5" },
+            { name: "T6 6BNT", type: "t5" }
+        ];
+
+        // Merged Armors & Armored Rigs from Images
+        const bodyArmors = [
+            // TIER 1 (t0)
+            { name: "T1 Bulletproof Vest", type: "t0" },
+
+            // TIER 2 (t1)
+            { name: "T2 220", type: "t1" },
+            { name: "T2 Security", type: "t1" },
+
+            // TIER 3 (t2)
+            { name: "T3 H-LC Lwt", type: "t2" },
+            { name: "T3 KN Assault", type: "t2" },
+            { name: "T3R Sentry3", type: "t2" }, // Rig
+
+            // TIER 4 (t3)
+            { name: "T4 SEK Fortress", type: "t3" },
+            { name: "T4 401", type: "t3" },
+            { name: "T4 Spartan B", type: "t3" },
+            { name: "T4R tm1", type: "t3" },     // Rig
+            { name: "T4R tm2", type: "t3" },     // Rig
+
+            // TIER 5 (t4)
+            { name: "T5 926 Com.", type: "t4" },
+            { name: "T5 HLC Tac", type: "t4" },
+            { name: "T5 bt6 heavy", type: "t4" },
+            { name: "T5R Defender M4", type: "t4" }, // Rig
+            { name: "T5R H-Tac A9", type: "t4" },    // Rig
+
+            // TIER 6 (t5)
+            { name: "T6 Marshal H.", type: "t5" },
+            { name: "T6 BT101", type: "t5" },
+            { name: "T6R AL Tactical", type: "t5" }, // Rig
+            { name: "T6R Spartan C", type: "t5" }    // Rig
+        ];
+
+        const weapons = [
+            // TIER 0 (t0)
+            { name: "usas12", type: "t0", weight: 20 },
+            { name: "ace31", type: "t0", weight: 20 },
+
+            // TIER 1 (t1)
+            { name: "MPX", type: "t1", weight: 20 },
+            { name: "PP19", type: "t1", weight: 20 },
+            { name: "AK-74N", type: "t1", weight: 20 },
+
+            // TIER 2 (t2)
+            { name: "sj16", type: "t2", weight: 30 },
+            { name: "m16", type: "t2", weight: 30 },
+            { name: "AN-94", type: "t2", weight: 30 },
+
+            // TIER 3 (t3)
+            { name: "m24", type: "t3", weight: 40 },
+            { name: "vss", type: "t3", weight: 40 },
+            { name: "FAL", type: "t3", weight: 40 },
+            { name: "AEK", type: "t3", weight: 40 },
+
+            // TIER 4 (t4) - Slightly Higher Priority
+            { name: "mk14", type: "t4", weight: 50 },
+            { name: "m110", type: "t4", weight: 50 },
+            { name: "M4A1", type: "t4", weight: 50 },
+            { name: "G3", type: "t4", weight: 50 },
+            { name: "T03", type: "t4", weight: 50 },
+            { name: "T951", type: "t4", weight: 50 },
+
+            // TIER 5 (t5) - High Priority but Rare Tier naturally
+            { name: "H416", type: "t5", weight: 60 },
+            { name: "AK-12", type: "t5", weight: 60 },
+            { name: "P-90", type: "t5", weight: 60 }
+        ];
+
+        // --- SETUP ---
+        function createStripContent(elementId, items, addHiddenZTH) {
+            const strip = document.getElementById(elementId);
+            let html = "";
+
+            let lastItemName = "";
+
+            for (let i = 0; i < totalCards; i++) {
+                let item, name;
+
+                // Try to find an item different from the last one to prevent visual duplicates
+                let attempts = 0;
+                do {
+                    item = items[Math.floor(Math.random() * items.length)];
+                    name = typeof item === 'object' ? item.name : item;
+                    attempts++;
+                } while (name === lastItemName && attempts < 10);
+
+                lastItemName = name;
+                const type = typeof item === 'object' ? item.type : 't0';
+                html += `<div class="card ${type}">${name}</div>`;
+            }
+
+            if (addHiddenZTH) {
+                html += `<div class="card zth">ZERO TO HERO</div>`;
+            }
+
+            strip.innerHTML = html;
+            strip.style.transform = `translateY(${80 + visualOffset}px)`;
+        }
+
+        createStripContent("strip-map", maps, false);
+        createStripContent("strip-helmet", helmets, true);
+        createStripContent("strip-armor", bodyArmors, true);
+        createStripContent("strip-weapon", weapons, true);
+
+        // --- HELPER: WEIGHTED RANDOM ---
+        function getWeightedRandom(items) {
+            // Prepare pool based on config weights
+            let pool = [];
+
+            // Use map/reduce to pick item
+            let totalWeight = 0;
+            let weightedItems = items.map(item => {
+                let w = 0;
+                if (item.weight) {
+                    w = item.weight;
+                } else {
+                    w = tierWeights[item.type] || 10;
+                }
+                return { item: item, weight: w };
+            });
+
+            weightedItems.forEach(wi => {
+                totalWeight += wi.weight;
+            });
+
+            let randomVal = Math.random() * totalWeight;
+
+            for (let i = 0; i < weightedItems.length; i++) {
+                randomVal -= weightedItems[i].weight;
+                if (randomVal <= 0) {
+                    return weightedItems[i].item;
+                }
+            }
+            return weightedItems[weightedItems.length - 1].item; // Fallback
+        }
+
+        // --- MAIN SPIN LOGIC ---
+        function spinAll() {
+            const btn = document.getElementById('spinBtn');
+            const body = document.body;
+            const mainTitle = document.getElementById('mainTitle');
+            const subTitle = document.getElementById('subTitle');
+            const chanceInput = document.getElementById('chanceInput');
+
+            btn.disabled = true;
+            btn.innerText = "SHUFFLING...";
+
+            // RESET VISUALS
+            body.classList.remove('alarm-mode');
+            mainTitle.innerText = "BR1MZY";
+            subTitle.innerText = "OPERATION: RNG";
+
+            // REGENERATE STRIPS FRESH (Prevents old winners from cluttering)
+            createStripContent("strip-map", maps, false);
+            createStripContent("strip-helmet", helmets, true);
+            createStripContent("strip-armor", bodyArmors, true);
+            createStripContent("strip-weapon", weapons, true);
+
+            // GET CHANCE FROM INPUT
+            let chancePercent = parseFloat(chanceInput.value);
+            if (isNaN(chancePercent)) chancePercent = 5;
+            const isZeroToHero = Math.random() < (chancePercent / 100);
+
+            // -- DETERMINE RESULTS --
+            let mapWinner = getWeightedRandom(maps);
+            let helmetWinner = getWeightedRandom(helmets);
+            let armorWinner = getWeightedRandom(bodyArmors);
+
+            // --- WEAPON LOGIC: NO REPEAT LAST 3 ---
+            let weaponWinner;
+            let attempts = 0;
+            const maxAttempts = 50;
+
+            // Get History
+            let history = JSON.parse(localStorage.getItem('weaponHistory') || '[]');
+
+            do {
+                weaponWinner = getWeightedRandom(weapons);
+                attempts++;
+            } while (history.includes(weaponWinner.name) && attempts < maxAttempts);
+
+            // Update History
+            history.unshift(weaponWinner.name);
+            if (history.length > 3) {
+                history = history.slice(0, 3); // Keep only last 3
+            }
+            localStorage.setItem('weaponHistory', JSON.stringify(history));
+
+
+            if (isZeroToHero) {
+                setTimeout(() => {
+                    body.classList.add('alarm-mode');
+                    mainTitle.innerText = "⚠ ZERO TO HERO ⚠";
+                    btn.innerText = "GOOD LUCK...";
+                }, 500);
+
+                // Map spins normally, others go to ZTH (last index usually)
+                spinColumn("strip-map", maps, 0, mapWinner);
+                // forceIndex = totalCards means the hidden ZTH card appended at the end
+                spinColumn("strip-helmet", helmets, 400, null, true);
+                spinColumn("strip-armor", bodyArmors, 800, null, true);
+                spinColumn("strip-weapon", weapons, 1200, null, true);
+
+            } else {
+                spinColumn("strip-map", maps, 0, mapWinner);
+                spinColumn("strip-helmet", helmets, 400, helmetWinner);
+                spinColumn("strip-armor", bodyArmors, 800, armorWinner);
+                spinColumn("strip-weapon", weapons, 1200, weaponWinner);
+            }
+
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerText = "START";
+            }, 5000);
+        }
+
+        function spinColumn(elementId, dataset, delay, winnerItem, forceZTH = false) {
+            const strip = document.getElementById(elementId);
+
+            // Target Index: Choose a random spot deep in the strip to stop
+            let targetIndex;
+            if (forceZTH) {
+                targetIndex = totalCards;
+            } else {
+                targetIndex = Math.floor(Math.random() * 15) + 40;
+
+                // MAGIC TRICK:
+                if (winnerItem) {
+                    const winningCard = strip.children[targetIndex];
+                    if (winningCard) {
+                        winningCard.className = `card ${winnerItem.type}`;
+                        winningCard.innerText = winnerItem.name;
+
+                        // --- ANTI-DUPLICATE NEIGHBOR CHECK ---
+                        const prevCard = strip.children[targetIndex - 1];
+                        const nextCard = strip.children[targetIndex + 1];
+
+                        // Helper to get a random item that is NOT the winner
+                        const getDifferentItem = () => {
+                            let pool = dataset.filter(x => x.name !== winnerItem.name);
+                            if (pool.length === 0) pool = dataset;
+                            return pool[Math.floor(Math.random() * pool.length)];
+                        };
+
+                        // Check Previous
+                        if (prevCard && prevCard.textContent.trim() === winnerItem.name) {
+                            const newItem = getDifferentItem();
+                            prevCard.className = `card ${newItem.type}`;
+                            prevCard.innerText = newItem.name;
+                        }
+                        // Check Next
+                        if (nextCard && nextCard.textContent.trim() === winnerItem.name) {
+                            const newItem = getDifferentItem();
+                            nextCard.className = `card ${newItem.type}`;
+                            nextCard.innerText = newItem.name;
+                        }
+                    }
+                }
+            }
+
+            // Slight force reflow to ensure styles apply before transition
+            // But we just rebuilt the strip, so we are at position 0 (set by createStripContent)
+            // We will make sure to set it explicitly just in case
+            strip.style.transition = "none";
+            strip.style.transform = `translateY(${80 + visualOffset}px)`;
+            strip.offsetHeight;
+
+            // Calculation
+            const targetPos = -(targetIndex * cardHeight) + 80 + visualOffset;
+
+            setTimeout(() => {
+                strip.style.transition = "transform 3s cubic-bezier(0.15, 0.9, 0.35, 1)";
+                strip.style.transform = `translateY(${targetPos}px)`;
+            }, 50 + delay);
+        }    
+    </script>
+
+</body>
+
+</html>

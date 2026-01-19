@@ -13,61 +13,110 @@ export const maps: RandomizerItem[] = [
 
 export const helmets: RandomizerItem[] = [
     // TIER 1 (t0)
+    { name: "T1 Kelsey Fire", type: "t0" },
+    { name: "T1 Lwt Safety", type: "t0" },
     { name: "T1 Motorcycle", type: "t0" },
-    { name: "T1 Fireman", type: "t0" },
-    { name: "T1 Safety", type: "t0" },
+    { name: "T1 Tanker Cap", type: "t0" },
     // TIER 2 (t1)
-    { name: "T2 R. Steel", type: "t1" },
-    { name: "T2 PAS", type: "t1" },
-    { name: "T2 Retro", type: "t1" },
-    { name: "T2 Riot", type: "t1" },
+    { name: "T2 Retro Military", type: "t1" },
+    { name: "T2 Retro Steel", type: "t1" },
+    { name: "T2 Aviator", type: "t1" },
+    { name: "T2 Security", type: "t1" },
+    { name: "T2 Sec. Riot", type: "t1" },
+    { name: "T2 PAS Std", type: "t1" },
     // TIER 3 (t2)
-    { name: "T3 SH12", type: "t2" },
-    { name: "T3 F70", type: "t2" },
     { name: "T3 PAS2", type: "t2" },
+    { name: "T3 F70 Tact.", type: "t2" },
+    { name: "T3 SH12 Mil.", type: "t2" },
+    { name: "T3 6B4", type: "t2" },
+    { name: "T3 6B4 Squad", type: "t2" },
+    { name: "T3 6B5", type: "t2" },
     // TIER 4 (t3)
-    { name: "T4 IND Tac", type: "t3" },
-    { name: "T4 KSS Tac", type: "t3" },
-    { name: "T4 KSS2 Tac", type: "t3" },
+    { name: "T4 F80 Tact.", type: "t3" },
+    { name: "T4 IND Tact.", type: "t3" },
+    { name: "T4 IND Snow", type: "t3" },
+    { name: "T4 SH18 Mil.", type: "t3" },
+    { name: "T4 KSS Tact.", type: "t3" },
+    { name: "T4 SH40 Mil.", type: "t3" },
+    { name: "T4 KSS2 Tact.", type: "t3" },
+    { name: "T4 IND200", type: "t3" },
     { name: "T4 56K Heli", type: "t3" },
     // TIER 5 (t4)
-    { name: "T5 RSP H.", type: "t4" },
-    { name: "T5 AN95", type: "t4" },
-    { name: "T5 SH M2 Matzka", type: "t4" },
+    { name: "T5 FA Assault", type: "t4" },
+    { name: "T5 03 Heavy", type: "t4" },
+    { name: "T5 RSP Heavy", type: "t4" },
+    { name: "T5 SH50 Mil.", type: "t4" },
+    { name: "T5 SH Matzka 2", type: "t4" },
+    { name: "T5 SH60 Mil.", type: "t4" },
+    { name: "T5 AN95 Blast", type: "t4" },
     // TIER 6 (t5)
+    { name: "T6 6BNT", type: "t5" },
+    { name: "T6 HG84 Off.", type: "t5" },
     { name: "T6 DOD9 Blast", type: "t5" },
-    { name: "T6 SH65", type: "t5" },
-    { name: "T6 RST Sp.", type: "t5" },
-    { name: "T6 6BNT", type: "t5" }
+    { name: "T6 IND50 Hvy", type: "t5" },
+    { name: "T6 AS200 Hvy", type: "t5" },
+    { name: "T6 SH65 Mil.", type: "t5" },
+    { name: "T6 RST Spec.", type: "t5" },
+    { name: "T6 IND70 Tac", type: "t5" },
 ];
 
 export const bodyArmors: RandomizerItem[] = [
     // TIER 1 (t0)
-    { name: "T1 Bulletproof Vest", type: "t0" },
+    { name: "T1 Retro Sapper", type: "t0" },
+    { name: "T1 Old Security", type: "t0" },
+    { name: "T1 Retro Vest", type: "t0" },
     // TIER 2 (t1)
-    { name: "T2 220", type: "t1" },
+    { name: "T2 Retro Infantry", type: "t1" },
     { name: "T2 Security", type: "t1" },
+    { name: "T2 220", type: "t1" },
+    // TIER 2 Rigs (t1)
+    { name: "T2R M1955 Combat", type: "t1" },
     // TIER 3 (t2)
+    { name: "T3 H-Tac SWAT", type: "t2" },
+    { name: "T3 KN Reg.", type: "t2" },
     { name: "T3 H-LC Lwt", type: "t2" },
+    { name: "T3 Std SWAT", type: "t2" },
     { name: "T3 KN Assault", type: "t2" },
-    { name: "T3R Sentry3", type: "t2" },
+    { name: "T3 PCA350", type: "t2" },
+    // TIER 3 Rigs (t2)
+    { name: "T3R 926 Security", type: "t2" },
+    { name: "T3R Sentry 3", type: "t2" },
+    { name: "T3R 6B5 Rig", type: "t2" },
     // TIER 4 (t3)
     { name: "T4 SEK Fortress", type: "t3" },
-    { name: "T4 401", type: "t3" },
+    { name: "T4 6B23", type: "t3" },
     { name: "T4 Spartan B", type: "t3" },
-    { name: "T4R tm1", type: "t3" },
-    { name: "T4R tm2", type: "t3" },
+    { name: "T4 6B13", type: "t3" },
+    { name: "T4 IND401", type: "t3" },
+    // TIER 4 Rigs (t3)
+    { name: "T4R TM1", type: "t3" },
+    { name: "T4R TM2", type: "t3" },
+    { name: "T4R Sentry 305", type: "t3" },
     // TIER 5 (t4)
-    { name: "T5 926 Com.", type: "t4" },
-    { name: "T5 HLC Tac", type: "t4" },
-    { name: "T5 bt6 heavy", type: "t4" },
-    { name: "T5R Defender M4", type: "t4" },
+    { name: "T5 H-LC Tac", type: "t4" },
+    { name: "T5 BT6 Heavy", type: "t4" },
+    { name: "T5 IMTV Std", type: "t4" },
+    { name: "T5 IMTV Assault", type: "t4" },
+    { name: "T5 IMTV Full", type: "t4" },
+    { name: "T5 926 Comp.", type: "t4" },
+    { name: "T5 Defender M4", type: "t4" },
+    { name: "T5 Def. L4 (Ski)", type: "t4" },
+    // TIER 5 Rigs (t4)
+    { name: "T5R Warrior Hvy", type: "t4" },
+    { name: "T5R H-Tac A8", type: "t4" },
     { name: "T5R H-Tac A9", type: "t4" },
+    { name: "T5R Def. M4 Rig", type: "t4" },
     // TIER 6 (t5)
-    { name: "T6 Marshal H.", type: "t5" },
-    { name: "T6 BT101", type: "t5" },
+    { name: "T6 Marshal Hvy", type: "t5" },
+    { name: "T6 BT101 Tac", type: "t5" },
+    { name: "T6 KN Comp.", type: "t5" },
+    { name: "T6 6B45 Hvy", type: "t5" },
+    // TIER 6 Rigs (t5)
+    { name: "T6R Spartan C", type: "t5" },
+    { name: "T6R AVS Heavy", type: "t5" },
+    { name: "T6R AL Assault", type: "t5" },
     { name: "T6R AL Tactical", type: "t5" },
-    { name: "T6R Spartan C", type: "t5" }
+    { name: "T6R AL Comdr", type: "t5" },
 ];
 
 export const weapons: RandomizerItem[] = [
