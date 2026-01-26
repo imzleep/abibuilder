@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import NextImage from "next/image";
 
 interface Streamer {
   id: string;
@@ -127,10 +128,13 @@ export default function StreamerRow({ streamers }: StreamerRowProps) {
 
                     {/* Avatar */}
                     <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-surface-elevated group-hover:border-primary transition-all duration-300 bg-surface">
-                      <img
+                      <NextImage
                         src={streamer.avatar_url || "https://via.placeholder.com/120?text=?"}
                         alt={streamer.username}
-                        className="w-full h-full object-cover"
+                        fill
+                        quality={95}
+                        sizes="128px"
+                        className="object-cover"
                       />
                     </div>
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 import { Search } from "lucide-react";
 import { searchUsers } from "@/app/actions/profile";
@@ -148,7 +149,14 @@ export default function Hero({ stats: inputStats }: HeroProps) {
                     >
                       <div className="w-10 h-10 rounded-full overflow-hidden border border-white/10 shrink-0">
                         {u.avatar_url ? (
-                          <img src={u.avatar_url} alt={u.username} className="w-full h-full object-cover" />
+                          <Image
+                            src={u.avatar_url}
+                            alt={u.username}
+                            fill
+                            quality={95}
+                            sizes="40px"
+                            className="object-cover"
+                          />
                         ) : (
                           <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-sm">
                             {u.username[0].toUpperCase()}

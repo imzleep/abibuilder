@@ -2,6 +2,7 @@
 
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { ArrowBigUp, ArrowBigDown, Bookmark, Copy, Trash2, Loader2 } from "lucide-react";
 import { WeaponBuild } from "@/types";
@@ -122,10 +123,13 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
           {/* Image Section */}
           <Link href={`/builds/${build.short_code || build.id}`} className="block">
             <div className="relative mb-3 rounded-lg overflow-hidden bg-surface aspect-[4/3]">
-              <img
+              <Image
                 src={build.weaponImage || "https://placehold.co/400x300/1a1a1a/666?text=No+Image"}
                 alt={build.weaponName}
-                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+                fill
+                quality={95}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                className="object-cover transform group-hover:scale-105 transition-transform duration-500"
               />
 
               {/* Price Badge */}

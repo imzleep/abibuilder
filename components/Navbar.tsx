@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Menu, X, LogIn, LogOut, Search, Coffee, User as UserIcon, Shield, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
@@ -153,7 +154,14 @@ export default function Navbar({ user, profile }: NavbarProps) {
                         >
                           <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10 shrink-0">
                             {u.avatar_url ? (
-                              <img src={u.avatar_url} alt={u.username} className="w-full h-full object-cover" />
+                              <NextImage
+                                src={u.avatar_url}
+                                alt={u.username}
+                                fill
+                                quality={95}
+                                sizes="32px"
+                                className="object-cover"
+                              />
                             ) : (
                               <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
                                 {u.username[0].toUpperCase()}
@@ -204,10 +212,13 @@ export default function Navbar({ user, profile }: NavbarProps) {
                     {/* User avatar/initials */}
                     <div className="h-9 w-9 rounded-full overflow-hidden border border-primary/50 relative">
                       {avatarUrl ? (
-                        <img
+                        <NextImage
                           src={avatarUrl}
                           alt={displayName}
-                          className="h-full w-full object-cover"
+                          fill
+                          quality={95}
+                          sizes="36px"
+                          className="object-cover"
                         />
                       ) : (
                         <div className="h-full w-full bg-primary/20 flex items-center justify-center text-primary font-bold">
@@ -333,10 +344,13 @@ export default function Navbar({ user, profile }: NavbarProps) {
                   <div className="flex items-center gap-3 px-4 py-2">
                     <div className="h-8 w-8 rounded-full overflow-hidden border border-primary/50 relative">
                       {user.user_metadata?.avatar_url ? (
-                        <img
+                        <NextImage
                           src={user.user_metadata.avatar_url}
                           alt={user.user_metadata?.full_name || "User"}
-                          className="h-full w-full object-cover"
+                          fill
+                          quality={95}
+                          sizes="32px"
+                          className="object-cover"
                         />
                       ) : (
                         <div className="h-full w-full bg-primary/20 flex items-center justify-center text-primary font-bold">
