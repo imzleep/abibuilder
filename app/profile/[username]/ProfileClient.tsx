@@ -1,5 +1,7 @@
 "use client";
 
+import NextImage from "next/image";
+
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Pagination from "@/components/Pagination";
@@ -409,7 +411,7 @@ export default function ProfileClient({
                                             <div className="flex items-center gap-4">
                                                 <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 shrink-0">
                                                     {avatarUrl ? (
-                                                        <img src={avatarUrl} alt="Avatar Preview" className="w-full h-full object-cover" />
+                                                        <NextImage src={avatarUrl} alt="Avatar Preview" fill quality={95} sizes="48px" className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full bg-primary/20 flex items-center justify-center text-primary font-bold">
                                                             {username[0]?.toUpperCase()}
@@ -444,7 +446,7 @@ export default function ProfileClient({
                         <div className="relative flex-shrink-0 mx-auto md:mx-0">
                             <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-primary bg-surface shadow-xl relative group-hover:scale-105 transition-transform duration-300">
                                 {profile.avatar_url ? (
-                                    <img src={profile.avatar_url} alt={profile.display_name} className="w-full h-full object-cover" />
+                                    <NextImage src={profile.avatar_url} alt={profile.display_name} fill quality={95} sizes="128px" className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center bg-primary/20 text-4xl font-bold text-primary">
                                         {profile.username[0]?.toUpperCase()}
