@@ -287,7 +287,11 @@ export default function BuildsPage() {
             </div>
 
             {/* Top Ad Banner */}
-            <AdBanner className="mb-8 rounded-xl" />
+            <AdBanner
+              className="mb-8 rounded-xl"
+              imageUrl="/ads/horizontal.png"
+              linkUrl="https://buffbuff.com/top-up/arena-breakout-infinite?utm_media=zleep&utm_source=zleep"
+            />
 
             <div className="mb-8">
               <h1 className="font-display font-bold text-4xl mb-2">

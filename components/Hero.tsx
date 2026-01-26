@@ -94,9 +94,18 @@ export default function Hero({ stats: inputStats }: HeroProps) {
         </div>
 
         {/* Subtitle */}
+        {/* Subtitle */}
         <p className="text-text-secondary text-lg sm:text-xl md:text-2xl mb-12 max-w-3xl mx-auto animate-fade-in">
           Discover, create, and share the most powerful weapon builds for{" "}
-          <span className="text-primary font-semibold">Arena Breakout: Infinite</span>
+          <span className="text-primary font-semibold">Arena Breakout: Infinite</span>. Fueled by{" "}
+          <a
+            href="https://buffbuff.com/top-up/arena-breakout-infinite?utm_media=zleep&utm_source=zleep"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white font-bold hover:text-primary transition-colors hover:underline"
+          >
+            BuffBuff
+          </a>
         </p>
 
         {/* Search Bar */}

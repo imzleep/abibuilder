@@ -2,6 +2,7 @@ import { getBuildAction } from "@/app/actions/builds";
 import BuildCard from "@/components/BuildCard";
 import BuildActions from "@/components/BuildActions";
 import ShareButton from "@/components/ShareButton";
+import AdBanner from "@/components/ads/AdBanner";
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -148,6 +149,14 @@ export default async function BuildDetailPage({ params }: Props) {
                         </div>
 
                         <ShareButton />
+
+                        {/* Sidebar Ad - Square/Rectangle Format */}
+                        <AdBanner
+                            format="rectangle"
+                            className="rounded-xl"
+                            imageUrl="/ads/square.png"
+                            linkUrl="https://buffbuff.com/top-up/arena-breakout-infinite?utm_media=zleep&utm_source=zleep"
+                        />
                     </div>
                 </div>
             </div>

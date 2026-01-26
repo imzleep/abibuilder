@@ -151,7 +151,12 @@ export default function BuildFilters({
             </div>
             <div className="pt-6 border-t border-white/5">
                 <p className="text-xs font-bold text-text-secondary/50 mb-2 uppercase tracking-wider">Sponsored</p>
-                <AdBanner format="rectangle" className="rounded-xl" />
+                <AdBanner
+                    format="rectangle"
+                    className="rounded-xl"
+                    imageUrl="/ads/square.png"
+                    linkUrl="https://buffbuff.com/top-up/arena-breakout-infinite?utm_media=zleep&utm_source=zleep"
+                />
             </div>
         </div>
     );

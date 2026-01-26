@@ -106,7 +106,10 @@ export default async function Home() {
 
       {/* Ad Banner */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AdBanner />
+        <AdBanner
+          imageUrl="/ads/horizontal.png"
+          linkUrl="https://buffbuff.com/top-up/arena-breakout-infinite?utm_media=zleep&utm_source=zleep"
+        />
       </div>
 
       {/* Latest Community Builds */}
