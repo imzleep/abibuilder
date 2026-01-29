@@ -152,7 +152,7 @@ export default function Navbar({ user, profile }: NavbarProps) {
                           }}
                           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/5 transition-colors text-left"
                         >
-                          <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10 shrink-0">
+                          <div className="relative w-8 h-8 rounded-full overflow-hidden border border-white/10 shrink-0">
                             {u.avatar_url ? (
                               <NextImage
                                 src={u.avatar_url}

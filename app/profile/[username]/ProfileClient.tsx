@@ -409,7 +409,7 @@ export default function ProfileClient({
                                         <div className="space-y-2">
                                             <Label htmlFor="avatar">Profile Picture</Label>
                                             <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 shrink-0">
+                                                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-white/10 shrink-0">
                                                     {avatarUrl ? (
                                                         <NextImage src={avatarUrl} alt="Avatar Preview" fill quality={95} sizes="48px" className="w-full h-full object-cover" />
                                                     ) : (
