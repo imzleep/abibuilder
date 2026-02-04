@@ -7,6 +7,8 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+import { formatPrice } from "@/lib/utils";
+
 export const runtime = "edge";
 
 type Props = {
@@ -31,7 +33,7 @@ export async function generateMetadata(
 
     return {
         title: `${build.weaponName} Meta Build: ${build.title} by ${build.author} | Arena Breakout Infinite`,
-        description: build.description || `Best ${build.weaponName} loadout for Arena Breakout Infinite. Stats: V.Recoil ${build.stats.v_recoil_control}, Ergonomics ${build.stats.ergonomics}.`,
+        description: `Best ${build.weaponName} loadout for Arena Breakout Infinite. ${build.description?.substring(0, 50) || ''}... Estimated Cost: ~${build.price.toLocaleString()} Koen. Created by ${build.author}.`,
         keywords: [
             build.weaponName,
             `${build.weaponName} build`,
@@ -52,7 +54,7 @@ export async function generateMetadata(
         ],
         openGraph: {
             title: `${build.weaponName} Meta Build: ${build.title} | ABI Builder`,
-            description: `Check out this ${build.weaponName} loadout by ${build.author}. Price: $${build.price.toLocaleString()}`,
+            description: `Check out this ${build.weaponName} loadout by ${build.author}. Estimated Cost: ~${build.price.toLocaleString()} Koen`,
             images: [
                 {
                     url: build.image_url || "/logo.png",
@@ -64,7 +66,7 @@ export async function generateMetadata(
         twitter: {
             card: "summary_large_image",
             title: `${build.weaponName} Build: ${build.title}`,
-            description: `Check out this ${build.weaponName} loadout by ${build.author}.`,
+            description: `Check out this ${build.weaponName} loadout by ${build.author}. Est. Cost: ~${build.price.toLocaleString()} Koen`,
             images: [build.image_url || "/logo.png"],
         },
     };
@@ -88,8 +90,43 @@ export default async function BuildDetailPage({ params }: Props) {
 
     const build = result.build;
 
+    // SEO: JSON-LD Logic
+    const totalVotes = (build.upvotes || 0) + (build.downvotes || 0);
+    const ratingValue = totalVotes > 0 ? ((build.upvotes || 0) / totalVotes) * 5 : 0;
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": `${build.weaponName} Build: ${build.title}`,
+        "image": build.image_url || "https://abibuilder.com/logo.png",
+        "description": build.description || `Best ${build.weaponName} loadout for Arena Breakout Infinite.`,
+        "category": "Video Game Virtual Item", // Safety: Explicitly define as virtual item
+        "brand": {
+            "@type": "Brand",
+            "name": "Arena Breakout Infinite"
+        },
+        // Only include AggregateRating if there are votes
+        ...(totalVotes > 0 && {
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": ratingValue.toFixed(1),
+                "reviewCount": totalVotes,
+                "bestRating": "5",
+                "worstRating": "1"
+            }
+        }),
+        "author": {
+            "@type": "Person",
+            "name": build.author
+        }
+    };
+
     return (
         <main className="min-h-screen bg-background pb-20 pt-24">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Back Link */}
                 <Link
@@ -139,7 +176,7 @@ export default async function BuildDetailPage({ params }: Props) {
                                 </div>
                                 <div className="flex justify-between border-b border-white/5 pb-2">
                                     <span className="text-text-secondary">Est. Price</span>
-                                    <span className="text-accent font-bold">${build.price.toLocaleString()}</span>
+                                    <span className="text-accent font-bold">{formatPrice(build.price)}</span>
                                 </div>
                                 <div className="flex justify-between border-b border-white/5 pb-2">
                                     <span className="text-text-secondary">Created</span>

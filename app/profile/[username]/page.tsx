@@ -94,17 +94,22 @@ export async function generateMetadata(
   const profile = profileRes.data;
   const description = profile.bio || `Check out ${profile.username}'s weapon builds on ABI Builder.`;
 
+  const isStreamer = profile.is_streamer;
+  const title = isStreamer
+    ? `${profile.username} Arena Breakout Infinite Streamer Builds & Loadouts | ABI Builder`
+    : `${profile.username}'s Arena Breakout Infinite Builds & Loadouts | ABI Builder`;
+
   return {
-    title: `${profile.username}'s Arena Breakout Builds & Loadouts | ABI Builder`,
+    title: title,
     description: description.substring(0, 160),
     openGraph: {
-      title: `${profile.username}'s Arena Breakout Profile | ABI Builder`,
+      title: title,
       description: description,
       images: [{ url: profile.avatar_url || "/logo.png" }]
     },
     twitter: {
       card: "summary",
-      title: `${profile.username}'s Arena Breakout Profile`,
+      title: title,
       description: description,
       images: [profile.avatar_url || "/logo.png"],
     }

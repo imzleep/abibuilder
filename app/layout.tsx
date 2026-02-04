@@ -49,6 +49,10 @@ export const metadata: Metadata = {
     "abi meta builds",
     "best abi weapons",
     "arena breakout infinite gun builder",
+    "arena builds",
+    "arena breakout builds",
+    "abi gun builder",
+    "arena breakout infinite acts",
     // WEAPONS
     "H416", "M4A1", "FAL", "AK-74N", "AK-12", "P-90", "SJ16", "M110", "MK14", "VSS",
     "M24", "AN-94", "M16", "AEK", "ACE31", "G3", "MPX", "PP19", "USAS12", "T03", "T951",
