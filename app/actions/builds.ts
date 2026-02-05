@@ -572,7 +572,8 @@ export async function getBuildAction(buildId: string) {
         user_vote: userVote,
         can_delete: canDelete,
         can_edit: isAdmin || isMod,
-        user_id: data.user_id
+        user_id: data.user_id,
+        short_code: data.short_code // NEW: Critical for Canonical URL
     };
 
     return { success: true, build };

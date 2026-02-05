@@ -69,6 +69,9 @@ export async function generateMetadata(
             description: `Check out this ${build.weaponName} loadout by ${build.author}. Est. Cost: ~${build.price.toLocaleString()} Koen`,
             images: [build.image_url || "/logo.png"],
         },
+        alternates: {
+            canonical: `/builds/${build.short_code || build.id}`,
+        },
     };
 }
 
