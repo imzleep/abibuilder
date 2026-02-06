@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
 
+export const runtime = 'edge';
 export const revalidate = 3600; // 1 Hour Cache
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
