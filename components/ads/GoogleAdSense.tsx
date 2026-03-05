@@ -1,5 +1,4 @@
 import Script from "next/script";
-
 interface GoogleAdSenseProps {
     publisherId: string;
 }
@@ -9,11 +8,10 @@ export default function GoogleAdSense({ publisherId }: GoogleAdSenseProps) {
     if (!publisherId) return null;
 
     return (
-        <Script
-            id="adsbygoogle-init"
-            strategy="afterInteractive"
+        <script
+            async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`}
             crossOrigin="anonymous"
-        />
+        ></script>
     );
 }
