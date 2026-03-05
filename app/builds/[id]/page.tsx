@@ -3,6 +3,7 @@ import BuildCard from "@/components/BuildCard";
 import BuildActions from "@/components/BuildActions";
 import ShareButton from "@/components/ShareButton";
 import AdBanner from "@/components/ads/AdBanner";
+import AdPlaceholder from "@/components/ads/AdPlaceholder";
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -151,6 +152,11 @@ export default async function BuildDetailPage({ params }: Props) {
                                 <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{build.description}</p>
                             </div>
                         )}
+
+                        {/* Mid Page Ad Block */}
+                        <div className="mt-6">
+                            <AdPlaceholder format="horizontal" text="SPONSORED CONTENT" />
+                        </div>
                     </div>
 
                     {/* Right Column: Meta Info / Share / CTA */}

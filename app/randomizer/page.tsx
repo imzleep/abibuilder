@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 // --- CONSTANTS ---
 import RandomizerFilters from "@/components/randomizer/RandomizerFilters";
+import AdPlaceholder from "@/components/ads/AdPlaceholder";
 
 // --- CONSTANTS ---
 const CARD_HEIGHT = 80;
@@ -379,6 +380,12 @@ export default function RandomizerPage() {
                         />
                     </div>
 
+                </div>
+
+                {/* Ad Spot: Under Controls */}
+                <div className="w-full max-w-4xl mt-12">
+                    <p className="text-xs font-bold text-text-secondary/50 mb-2 uppercase tracking-wider text-center">Advertisement</p>
+                    <AdPlaceholder format="horizontal" text="SPONSORED SPOT" />
                 </div>
 
             </div>

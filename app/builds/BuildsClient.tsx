@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import BuildCard from "@/components/BuildCard";
 import Pagination from "@/components/Pagination";
-import AdBanner from "@/components/ads/AdBanner";
+import AdPlaceholder from "@/components/ads/AdPlaceholder";
 import { Slider } from "@/components/ui/slider";
 import { WeaponBuild } from "@/types";
 import { Filter, SlidersHorizontal, X, Search } from "lucide-react";
@@ -287,10 +287,10 @@ export default function BuildsPage() {
             </div>
 
             {/* Top Ad Banner */}
-            <AdBanner
-              className="mb-8 rounded-xl"
-              imageUrl="/ads/horizontal.png"
-              linkUrl="https://buffbuff.com/top-up/arena-breakout-infinite?utm_media=zleep&utm_source=zleep"
+            <AdPlaceholder
+              format="horizontal"
+              className="mb-8"
+              text="SPONSORED SPOT"
             />
 
             <div className="mb-8">
@@ -312,15 +312,33 @@ export default function BuildsPage() {
               {loading ? (
                 <div className="col-span-full text-center py-20 text-text-secondary">Loading builds...</div>
               ) : filteredBuilds.length > 0 ? (
-                filteredBuilds.map((build) => (
-                  <BuildCard
-                    key={build.id}
-                    build={build}
-                    onVote={handleVote}
-                    onBookmark={handleBookmark}
-                    onCopy={handleCopy}
-                  />
-                ))
+                <>
+                  {filteredBuilds.slice(0, 6).map((build) => (
+                    <BuildCard
+                      key={build.id}
+                      build={build}
+                      onVote={handleVote}
+                      onBookmark={handleBookmark}
+                      onCopy={handleCopy}
+                    />
+                  ))}
+
+                  {filteredBuilds.length > 6 && (
+                    <div className="col-span-full py-2">
+                      <AdPlaceholder format="horizontal" text="SPONSORED SPOT" />
+                    </div>
+                  )}
+
+                  {filteredBuilds.slice(6).map((build) => (
+                    <BuildCard
+                      key={build.id}
+                      build={build}
+                      onVote={handleVote}
+                      onBookmark={handleBookmark}
+                      onCopy={handleCopy}
+                    />
+                  ))}
+                </>
               ) : (
                 <div className="col-span-full text-center py-20 text-text-secondary">No builds found matching your filters.</div>
               )}

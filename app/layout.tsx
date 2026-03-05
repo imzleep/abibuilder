@@ -6,6 +6,7 @@ export const runtime = 'edge';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import AdBlockToast from "@/components/ads/AdBlockToast";
 import { createClient } from "@/lib/supabase/server";
 import { Toaster } from "sonner";
 import React from "react";
@@ -95,6 +96,8 @@ export const metadata: Metadata = {
   },
 };
 
+import GoogleAdSense from "@/components/ads/GoogleAdSense";
+
 export default async function RootLayout({
   children,
 }: {
@@ -116,9 +119,13 @@ export default async function RootLayout({
     profile = data;
   }
 
+  // Added your actual AdSense publisher ID
+  const AD_SENSE_PUBLISHER_ID = "ca-pub-5957474996836674";
+
   return (
     <html lang="en" className={`${inter.variable} ${rajdhani.variable}`} suppressHydrationWarning>
       <body className="font-sans">
+        <GoogleAdSense publisherId={AD_SENSE_PUBLISHER_ID} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -156,6 +163,7 @@ export default async function RootLayout({
         {children}
         <Footer />
         <Toaster theme="dark" position="top-center" />
+        <AdBlockToast />
       </body>
     </html>
   );

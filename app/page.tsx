@@ -4,7 +4,7 @@ import Hero from "@/components/Hero";
 import BuildCard from "@/components/BuildCard";
 import StreamerRow from "@/components/StreamerRow";
 import CategoryGrid from "@/components/CategoryGrid";
-import AdBanner from "@/components/ads/AdBanner";
+import AdPlaceholder from "@/components/ads/AdPlaceholder";
 import { TrendingUp } from "lucide-react";
 
 import { getBuildsAction } from "@/app/actions/builds";
@@ -106,10 +106,7 @@ export default async function Home() {
 
       {/* Ad Banner */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <AdBanner
-          imageUrl="/ads/horizontal.png"
-          linkUrl="https://buffbuff.com/top-up/arena-breakout-infinite?utm_media=zleep&utm_source=zleep"
-        />
+        <AdPlaceholder format="horizontal" text="SPONSORED SPOT" />
       </div>
 
       {/* Latest Community Builds */}

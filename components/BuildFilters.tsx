@@ -1,8 +1,8 @@
 "use client";
 
 import { Slider } from "@/components/ui/slider";
-import AdBanner from "@/components/ads/AdBanner";
 import { SlidersHorizontal } from "lucide-react";
+import AdBanner from "@/components/ads/AdBanner";
 
 // Weapon categories
 const weaponCategories = [
@@ -149,6 +149,8 @@ export default function BuildFilters({
                     ))}
                 </select>
             </div>
+
+            {/* Ad Spot: Bottom Sidebar */}
             <div className="pt-6 border-t border-white/5">
                 <p className="text-xs font-bold text-text-secondary/50 mb-2 uppercase tracking-wider">Sponsored</p>
                 <AdBanner

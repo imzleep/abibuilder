@@ -35,6 +35,7 @@ const config: Config = {
         "glow": "glow 2s ease-in-out infinite alternate",
         "slide-in": "slideIn 0.3s ease-out",
         "fade-in": "fadeIn 0.5s ease-out",
+        "shimmer": "shimmer 2s infinite linear",
       },
       keyframes: {
         glow: {
@@ -48,6 +49,9 @@ const config: Config = {
         fadeIn: {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
         },
       },
     },
