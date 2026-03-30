@@ -112,6 +112,9 @@ export async function generateMetadata(
       title: title,
       description: description,
       images: [profile.avatar_url || "/logo.png"],
+    },
+    alternates: {
+      canonical: `https://abibuilder.com/profile/${profile.username}`
     }
   };
 }

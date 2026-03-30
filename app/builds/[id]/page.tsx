@@ -71,7 +71,7 @@ export async function generateMetadata(
             images: [build.image_url || "/logo.png"],
         },
         alternates: {
-            canonical: `/builds/${build.short_code || build.id}`,
+            canonical: `https://abibuilder.com/builds/${build.short_code || build.id}`,
         },
     };
 }
