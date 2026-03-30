@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import AdBlockToast from "@/components/ads/AdBlockToast";
+import WipeNoticeToast from "@/components/WipeNoticeToast";
 import { createClient } from "@/lib/supabase/server";
 import { Toaster } from "sonner";
 import React from "react";
@@ -164,6 +165,7 @@ export default async function RootLayout({
         <Footer />
         <Toaster theme="dark" position="top-center" />
         <AdBlockToast />
+        <WipeNoticeToast />
       </body>
     </html>
   );
