@@ -1,12 +1,31 @@
 
 import { getAdminBuild } from "@/app/actions/admin";
 import AdminEditForm from "@/components/AdminEditForm";
+import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import BuildLogViewer from "@/components/admin/BuildLogViewer";
 
 export default async function AdminDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    
+    // Strict Admin Check
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user?.id).single();
+    
+    if (!profile?.is_admin) {
+        // Users who are not admins shouldn't even know this page exists
+        return (
+            <div className="min-h-screen pt-24 text-center text-white">
+                <h1 className="text-2xl font-bold mb-4">Unauthorized</h1>
+                <Link href="/" className="text-primary hover:underline">
+                    Return Home
+                </Link>
+            </div>
+        );
+    }
+
     const build = await getAdminBuild(id);
 
     if (!build) {

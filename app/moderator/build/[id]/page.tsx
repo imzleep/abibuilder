@@ -51,9 +51,13 @@ export default async function ReviewBuildPage({ params }: { params: Promise<{ id
         can_delete: false
     };
 
-    // Need to fetch author username separately since getAdminBuild is basic select *
-    // Optimally getAdminBuild should join, but for now I'll do a quick fetch
+    // Need to fetch current user profile for admin check (to hide Logs from mods)
     const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user?.id).single();
+    const isAdmin = profile?.is_admin || false;
+
+    // Fetch author username
     const { data: author } = await supabase.from("profiles").select("username").eq("id", build.user_id).single();
     if (author) formattedBuild.author = author.username;
 
@@ -99,8 +103,8 @@ export default async function ReviewBuildPage({ params }: { params: Promise<{ id
 
                             <ReviewControls buildId={build.id} />
                             
-                            {/* Audit Log Button triggers Dialog */}
-                            <BuildLogViewer buildId={build.id} />
+                            {/* Audit Log Button - ADMİNLERE ÖZEL */}
+                            {isAdmin && <BuildLogViewer buildId={build.id} />}
                         </div>
                     </div>
                 </div>

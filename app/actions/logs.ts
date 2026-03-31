@@ -45,12 +45,12 @@ export async function getBuildLogs(buildId: string) {
     // Check permissions
     const { data: profile } = await supabase
         .from("profiles")
-        .select("is_admin, is_moderator")
+        .select("is_admin")
         .eq("id", user.id)
         .single();
 
-    if (!profile?.is_admin && !profile?.is_moderator) {
-        return { success: false, error: "Access denied. Admin or Moderator required." };
+    if (!profile?.is_admin) {
+        return { success: false, error: "Access denied. Admin required." };
     }
 
     // Since build_logs references auth.users which isn't easily joined directly via public schema JS query,
