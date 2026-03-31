@@ -125,7 +125,7 @@ export async function getUserBuilds(userId: string, filters: any = {}, page: num
 
     let query = supabase
         .from("builds")
-        .select("*, profiles:user_id(username, is_streamer), weapon:weapon_id(name)", { count: 'exact' })
+        .select("*, profiles:user_id(username, is_streamer, is_supporter), weapon:weapon_id(name)", { count: 'exact' })
         .eq("user_id", userId);
 
     // --- APPLY FILTERS ---
@@ -278,6 +278,7 @@ export async function getUserBuilds(userId: string, filters: any = {}, page: num
             upvotes: b.upvotes,
             downvotes: b.downvotes,
             author: profileData?.username || "Unknown",
+            authorIsSupporter: profileData?.is_supporter || false,
             created_at: b.created_at,
             is_bookmarked: isBookmarked,
             user_vote: myVote,
@@ -306,7 +307,7 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
             build_id,
             builds!inner (
                 *,
-                profiles:user_id(username, is_streamer),
+                profiles:user_id(username, is_streamer, is_supporter),
                 weapon:weapon_id(name)
             )
         `, { count: 'exact' })
@@ -370,15 +371,14 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
             // Logic implies filters were applied but found nothing.
             // If NO filters, matchingIds is IsAll? No. buildQuery fetches ALL IDs. Expensive?
             // "Pre-fetch" is only efficient if filters reduce the set.
-            // Check if ANY filter was valid.
-            const hasFilters = filters.query || (filters.category && filters.category !== 'all') || filters.priceRange || (filters.weapons && filters.weapons.length > 0);
+            const hasFilters = filters.query || (filters.category && filters.category !== 'all') || (filters.priceRange && filters.priceRange.length > 0) || (filters.weapons && filters.weapons.length > 0);
             if (hasFilters) {
                 if (matchingIds.length === 0) return { builds: [], totalCount: 0 }; // Nothing matched filters
             }
         }
     } else {
         // Only if OTHER filters exist
-        const hasFilters = (filters.category && filters.category !== 'all') || filters.priceRange || (filters.weapons && filters.weapons.length > 0);
+        const hasFilters = (filters.category && filters.category !== 'all') || (filters.priceRange && filters.priceRange.length > 0) || (filters.weapons && filters.weapons.length > 0);
         if (hasFilters) {
             // REPEAT logic or abstract it? 
             // Ideally we just do the build query logic once if hasFilters.
@@ -443,7 +443,7 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
         const { data: rawData, error, count } = await query.range(from, to);
 
         if (error) {
-            console.error("User bookmarks error:", error);
+            console.error("User bookmarks error:", error.code, error.message, error.details, error.hint);
             return { builds: [], totalCount: 0 };
         }
 
@@ -514,6 +514,7 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
                 upvotes: b.upvotes,
                 downvotes: b.downvotes,
                 author: profileData?.username || "Unknown",
+                authorIsSupporter: profileData?.is_supporter || false,
                 created_at: b.created_at,
                 is_bookmarked: true, // It is in bookmarks list
                 user_vote: myVote,

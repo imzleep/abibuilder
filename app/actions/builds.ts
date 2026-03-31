@@ -189,7 +189,7 @@ export async function getBuildsAction(filters: any = {}, page: number = 1, limit
         .from("builds")
         .select(`
             *,
-            profiles:user_id (username, is_streamer),
+            profiles:user_id (username, is_streamer, is_supporter),
             weapon:weapon_id (name)
         `, { count: 'exact' })
         .eq("status", "verified"); // Only verified
@@ -412,6 +412,7 @@ export async function getBuildsAction(filters: any = {}, page: number = 1, limit
             upvotes: b.upvotes || 0,
             downvotes: b.downvotes || 0,
             author: b.profiles?.username || "Unknown",
+            authorIsSupporter: b.profiles?.is_supporter || false,
             created_at: b.created_at,
             is_bookmarked: isBookmarked,
             user_vote: myVote,
@@ -494,7 +495,7 @@ export async function getBuildAction(buildId: string) {
         .from("builds")
         .select(`
             *,
-            profiles:user_id (username, is_streamer)
+            profiles:user_id (username, is_streamer, is_supporter)
         `);
 
     // Basic heuristic: UUIDs are 36 chars. Short codes are much shorter (7-10).
@@ -567,6 +568,7 @@ export async function getBuildAction(buildId: string) {
         upvotes: data.upvotes || 0,
         downvotes: data.downvotes || 0,
         author: profileData?.username || "Unknown",
+        authorIsSupporter: profileData?.is_supporter || false,
         created_at: data.created_at,
         is_bookmarked: isBookmarked,
         user_vote: userVote,

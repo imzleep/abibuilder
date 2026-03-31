@@ -467,7 +467,7 @@ export default function ProfileClient({
                         <div className="flex-1 text-center md:text-left">
                             <div className="mb-4">
                                 <h1 className="font-display font-bold text-4xl mb-2 flex items-center justify-center md:justify-start gap-3 flex-wrap">
-                                    <span className={profile.is_supporter ? "text-gradient bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500 animate-pulse" : ""}>
+                                    <span className={profile.is_supporter ? "bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent animate-pulse" : ""}>
                                         {profile.display_name}
                                     </span>
                                     {profile.is_streamer && (

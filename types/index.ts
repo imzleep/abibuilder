@@ -19,6 +19,7 @@ export interface WeaponBuild {
   upvotes: number;
   downvotes: number;
   author: string;
+  authorIsSupporter?: boolean;
   created_at: string;
   is_bookmarked?: boolean;
   can_delete?: boolean;

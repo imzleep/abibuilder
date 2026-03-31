@@ -151,7 +151,7 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
             <span className="text-white/20">•</span>
             <span>by</span>
             {build.author !== "Unknown" ? (
-              <Link href={`/profile/${build.author}`} className="text-primary font-medium hover:underline hover:text-accent transition-colors">
+              <Link href={`/profile/${build.author}`} className={cn("font-medium hover:underline transition-colors", build.authorIsSupporter ? "bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent animate-pulse" : "text-primary hover:text-accent")}>
                 {build.author}
               </Link>
             ) : (

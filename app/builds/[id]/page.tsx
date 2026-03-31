@@ -175,7 +175,7 @@ export default async function BuildDetailPage({ params }: Props) {
                             <div className="space-y-4 text-sm">
                                 <div className="flex justify-between border-b border-white/5 pb-2">
                                     <span className="text-text-secondary">Author</span>
-                                    <Link href={`/profile/${build.author}`} className="text-primary hover:underline font-medium">
+                                    <Link href={`/profile/${build.author}`} className={`hover:underline font-medium ${build.authorIsSupporter ? 'bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 bg-clip-text text-transparent animate-pulse' : 'text-primary'}`}>
                                         {build.author}
                                     </Link>
                                 </div>
