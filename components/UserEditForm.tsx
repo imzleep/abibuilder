@@ -60,13 +60,25 @@ export default function UserEditForm({ build }: { build: any }) {
             return;
         }
 
+        if (formData.description.split('\n').length > 10) {
+            toast.error("Description cannot exceed 10 lines.");
+            return;
+        }
+
         if (formData.price <= 0) {
             toast.error("Please enter a valid price greater than 0.");
             return;
         }
 
         setLoading(true);
-        const payload = { ...formData, image_url: buildImage };
+        // Trim specifically before payload creation
+        const payload = { 
+            ...formData, 
+            title: formData.title.trim(),
+            build_code: formData.build_code.trim(),
+            description: formData.description.trim(),
+            image_url: buildImage 
+        };
         const res = await updateUserBuildAction(build.id, payload);
         setLoading(false);
 
@@ -178,6 +190,7 @@ export default function UserEditForm({ build }: { build: any }) {
                                 onChange={handleChange}
                                 required
                                 className="w-full px-4 py-2 rounded-lg bg-black/20 border border-white/10 focus:border-primary/50 focus:outline-none"
+                                maxLength={50}
                             />
                         </div>
 
@@ -189,6 +202,7 @@ export default function UserEditForm({ build }: { build: any }) {
                                 onChange={handleChange}
                                 required
                                 className="w-full px-4 py-2 rounded-lg bg-black/20 border border-white/10 focus:border-primary/50 focus:outline-none font-mono text-sm"
+                                maxLength={50}
                             />
                         </div>
 
@@ -214,6 +228,7 @@ export default function UserEditForm({ build }: { build: any }) {
                             onChange={handleChange}
                             rows={3}
                             className="w-full px-4 py-2 rounded-lg bg-black/20 border border-white/10 focus:border-primary/50 focus:outline-none"
+                            maxLength={200}
                         />
                     </div>
 

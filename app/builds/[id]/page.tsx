@@ -139,13 +139,13 @@ export default async function BuildDetailPage({ params }: Props) {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left Column: The Card (We reuse the component for consistency and features) */}
                     <div className="lg:col-span-2">
-                        <BuildCard build={build} />
+                        <BuildCard build={build} fullHeight={false} />
 
                         {/* Description Box (Separate since Card might truncate or doesn't show full desc) */}
                         {build.description && (
                             <div className="mt-6 glass-elevated rounded-xl p-6 border border-white/5">
                                 <h3 className="font-display font-bold text-lg mb-2 text-white">Author's Notes</h3>
-                                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{build.description}</p>
+                                <p className="text-gray-300 leading-relaxed whitespace-pre-wrap break-words">{build.description}</p>
                             </div>
                         )}
 

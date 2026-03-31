@@ -26,9 +26,10 @@ interface BuildCardProps {
   onBookmark?: (buildId: string) => void;
   onCopy?: (buildId: string) => void;
   onDelete?: (buildId: string) => void;
+  fullHeight?: boolean;
 }
 
-export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete }: BuildCardProps) {
+export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete, fullHeight = true }: BuildCardProps) {
   const router = useRouter();
   // Use local state for optimistic UI updates
   const [userVote, setUserVote] = useState<'up' | 'down' | null>(build.user_vote || null);
@@ -118,8 +119,11 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
 
   return (
     <>
-      <div className="group relative glass-elevated rounded-xl overflow-hidden transition-all duration-300 animate-fade-in hover:border-primary/30 flex flex-col h-full">
-        <div className="relative p-4 flex flex-col h-full">
+      <div className={cn(
+        "group relative glass-elevated rounded-xl overflow-hidden transition-all duration-300 animate-fade-in hover:border-primary/30 flex flex-col",
+        fullHeight ? "h-full" : "h-fit"
+      )}>
+        <div className={cn("relative p-4 flex flex-col", fullHeight ? "h-full" : "h-fit")}>
           {/* Image Section */}
           <Link href={`/builds/${build.short_code || build.id}`} className="block">
             <div className="relative mb-3 rounded-lg overflow-hidden bg-surface aspect-[4/3]">

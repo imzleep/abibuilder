@@ -201,8 +201,8 @@ export default function ProfileClient({
                 return;
             }
 
-            if (!usernameAvailable) {
-                toast.error("Username is already taken.");
+            if (bio && bio.split('\n').length > 5) {
+                toast.error("Bio cannot exceed 5 lines.");
                 setEditLoading(false);
                 return;
             }

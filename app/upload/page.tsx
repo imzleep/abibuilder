@@ -123,9 +123,14 @@ export default function UploadBuildPage() {
 
     if (isSubmitting) return;
 
-    if (!buildName || !weaponType || !weaponName || !buildCode || !avgPrice) {
+    if (!buildName || !weaponName || !weaponName || !buildCode || !avgPrice) {
       toast.error("Please fill in all required fields.");
       return;
+    }
+
+    if (description.split('\n').length > 10) {
+        toast.error("Description cannot exceed 10 lines.");
+        return;
     }
 
     // MANDATORY Image Check
@@ -138,12 +143,12 @@ export default function UploadBuildPage() {
 
     try {
       const payload = {
-        buildName,
+        buildName: buildName.trim(),
         weaponName,
         weaponId: selectedWeaponId, // Send ID
-        buildCode,
+        buildCode: buildCode.trim(),
         avgPrice,
-        description,
+        description: description.trim(),
         imageUrl: buildImage, // Add image URL
         tags: selectedTags,
         stats: {
@@ -345,6 +350,7 @@ export default function UploadBuildPage() {
                 placeholder="e.g., M4A1 Tactical Beast"
                 className="w-full px-4 py-3 rounded-lg glass border border-white/10 focus:border-primary/50 focus:outline-none transition-colors"
                 required
+                maxLength={50}
               />
             </div>
 
@@ -416,6 +422,7 @@ export default function UploadBuildPage() {
                   placeholder="e.g., 3frMCofJxygGfP4A4"
                   className="w-full px-4 py-3 rounded-lg glass border border-white/10 focus:border-primary/50 focus:outline-none transition-colors"
                   required
+                  maxLength={50}
                 />
               </div>
               <div>
@@ -442,6 +449,7 @@ export default function UploadBuildPage() {
                 placeholder="Describe your build, attachments, and playstyle..."
                 rows={4}
                 className="w-full px-4 py-3 rounded-lg glass border border-white/10 focus:border-primary/50 focus:outline-none transition-colors resize-none"
+                maxLength={200}
               />
             </div>
           </div>

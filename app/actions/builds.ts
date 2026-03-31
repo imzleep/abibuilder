@@ -49,21 +49,34 @@ export async function createBuildAction(formData: any) {
         return { success: false, error: "You must be logged in to upload a build." };
     }
 
-    // 2. Validate Data (Basic)
-    const {
+    // 2. Validate Data & Trim
+    let {
         buildName,
-        weaponName, // This might need mapping to weapon_id
+        weaponName,
         buildCode,
         avgPrice,
         description,
-        imageUrl, // New
+        imageUrl,
         tags,
         stats,
-        authorId, // NEW: Optional author ID for admin impersonation
+        authorId,
     } = formData;
 
+    // Trim strings
+    buildName = buildName?.trim();
+    buildCode = buildCode?.trim();
+    description = description?.trim();
+
     if (!buildName || !weaponName || !buildCode) {
-        return { success: false, error: "Missing required fields." };
+        return { success: false, error: "Missing required fields (Title, Weapon, and Build Code are required)." };
+    }
+
+    // Length validation
+    if (buildName.length > 50) return { success: false, error: "Build Name cannot exceed 50 characters." };
+    if (buildCode.length > 50) return { success: false, error: "Build Code cannot exceed 50 characters." };
+    if (description) {
+        if (description.length > 200) return { success: false, error: "Description cannot exceed 200 characters." };
+        if (description.split('\n').length > 10) return { success: false, error: "Description cannot exceed 10 lines." };
     }
 
     // 2.5 Admin Impersonation Check
@@ -623,7 +636,22 @@ export async function updateUserBuildAction(buildId: string, updates: any) {
     let safeUpdates: any = {};
     for (const key of allowedFields) {
         if (updates.hasOwnProperty(key)) {
-            safeUpdates[key] = updates[key];
+            let val = updates[key];
+            
+            // Trim and validate lengths for strings
+            if (key === 'title' || key === 'build_code' || key === 'description') {
+                if (typeof val === 'string') {
+                    val = val.trim();
+                    if (key === 'title' && (!val || val.length > 50)) return { success: false, error: "Title is required and must be under 50 characters." };
+                    if (key === 'build_code' && (!val || val.length > 50)) return { success: false, error: "Build Code is required and must be under 50 characters." };
+                    if (key === 'description') {
+                        if (val.length > 200) return { success: false, error: "Description must be under 200 characters." };
+                        if (val.split('\n').length > 10) return { success: false, error: "Description must be under 10 lines." };
+                    }
+                }
+            }
+            
+            safeUpdates[key] = val;
         }
     }
 

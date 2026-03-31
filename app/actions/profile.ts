@@ -547,6 +547,12 @@ export async function updateProfileAction(username: string, displayName: string,
         return { success: false, error: "Display Name must match your Username (only capitalization changes allowed)." };
     }
 
+    // Validate Bio (Max 160 chars, 5 lines)
+    if (bio) {
+        if (bio.length > 160) return { success: false, error: "Bio cannot exceed 160 characters." };
+        if (bio.split('\n').length > 5) return { success: false, error: "Bio cannot exceed 5 lines." };
+    }
+
     // 1. Check if username is taken (if changed)
     const currentProfile = await supabase.from("profiles").select("username, last_username_change").eq("id", user.id).single();
 
