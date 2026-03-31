@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { logBuildAction } from "@/app/actions/logs";
 import { redirect } from "next/navigation";
 import { WeaponBuild } from "@/types";
 
@@ -418,6 +419,8 @@ export async function getBuildsAction(filters: any = {}, page: number = 1, limit
             user_vote: myVote,
 
             can_delete: canDelete,
+            can_edit: canDelete,
+            is_owner: user ? user.id === b.user_id : false,
             short_code: b.short_code, // NEW
         };
     });
@@ -523,10 +526,10 @@ export async function getBuildAction(buildId: string) {
     let isBookmarked = false;
 
     if (user) {
-        const { data: vote } = await supabase.from("build_votes").select("vote_type").eq("build_id", buildId).eq("user_id", user.id).single();
+        const { data: vote } = await supabase.from("build_votes").select("vote_type").eq("build_id", data.id).eq("user_id", user.id).single();
         userVote = vote?.vote_type || null;
 
-        const { data: bookmark } = await supabase.from("bookmarks").select("id").eq("build_id", buildId).eq("user_id", user.id).single();
+        const { data: bookmark } = await supabase.from("bookmarks").select("id").eq("build_id", data.id).eq("user_id", user.id).single();
         isBookmarked = !!bookmark;
     }
 
@@ -578,7 +581,7 @@ export async function getBuildAction(buildId: string) {
         is_bookmarked: isBookmarked,
         user_vote: userVote,
         can_delete: canDelete,
-        can_edit: isAdmin || isMod,
+        can_edit: isAdmin || isMod || isOwner,
         user_id: data.user_id,
         is_owner: isOwner,
         short_code: data.short_code // NEW: Critical for Canonical URL
@@ -595,10 +598,10 @@ export async function updateUserBuildAction(buildId: string, updates: any) {
         return { success: false, error: "You must be logged in to edit a build." };
     }
 
-    // 1. Fetch Build to check ownership
+    // 1. Fetch Build to check ownership and track history
     const { data: build, error: fetchError } = await supabase
         .from("builds")
-        .select("user_id")
+        .select("*")
         .eq("id", buildId)
         .single();
 
@@ -612,8 +615,8 @@ export async function updateUserBuildAction(buildId: string, updates: any) {
     }
 
     // 3. Filter allowed fields only
-    // This prevents malicious users from injecting status="verified" or changing their image_url directly
-    const allowedFields = ['title', 'description', 'build_code', 'price', 
+    // User can edit image_url again since it goes to pending status
+    const allowedFields = ['title', 'description', 'build_code', 'price', 'image_url',
         'v_recoil_control', 'h_recoil_control', 'ergonomics', 'weapon_stability', 
         'accuracy', 'hipfire_stability', 'effective_range', 'muzzle_velocity', 'tags'];
     
@@ -621,6 +624,17 @@ export async function updateUserBuildAction(buildId: string, updates: any) {
     for (const key of allowedFields) {
         if (updates.hasOwnProperty(key)) {
             safeUpdates[key] = updates[key];
+        }
+    }
+
+    // Force status back to pending upon user edit
+    safeUpdates.status = 'pending';
+
+    // 3.5 Calculate Diffs for Audit Log
+    const changes: Record<string, any> = {};
+    for (const key in safeUpdates) {
+        if (JSON.stringify(build[key]) !== JSON.stringify(safeUpdates[key])) {
+            changes[key] = { old: build[key], new: safeUpdates[key] };
         }
     }
 
@@ -632,6 +646,11 @@ export async function updateUserBuildAction(buildId: string, updates: any) {
 
     if (updateError) {
         return { success: false, error: updateError.message };
+    }
+
+    // Log the action if there were meaningful changes
+    if (Object.keys(changes).length > 0) {
+        await logBuildAction(buildId, user.id, "edited", changes);
     }
 
     // 5. Revalidate

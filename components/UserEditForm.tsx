@@ -4,13 +4,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateUserBuildAction } from "@/app/actions/builds";
-import { Loader2 } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
+import { compressImage } from "@/lib/image-compression";
+import { createClient } from "@/lib/supabase/client";
+import Image from "next/image";
 
 const availableTags = ["META", "Budget", "Zero Recoil", "Hip Fire Build", "Troll Build"];
 
 export default function UserEditForm({ build }: { build: any }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const [buildImage, setBuildImage] = useState<string | null>(build.weaponImage || build.image_url || null);
 
     const [formData, setFormData] = useState({
         title: build.title || "",
@@ -61,24 +66,109 @@ export default function UserEditForm({ build }: { build: any }) {
         }
 
         setLoading(true);
-        const res = await updateUserBuildAction(build.id, formData);
+        const payload = { ...formData, image_url: buildImage };
+        const res = await updateUserBuildAction(build.id, payload);
         setLoading(false);
 
         if (res.success) {
-            toast.success("Build updated successfully!");
-            // Redirect back to the build details page
-            router.push(`/builds/${build.short_code || build.id}`);
+            toast.success("Build updated and sent for review!");
+            // Redirect back to the homepage since it's pending now
+            router.push(`/`);
             router.refresh();
         } else {
             toast.error(res.error || "Failed to update build.");
         }
     };
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+            toast.error("Please select an image file.");
+            return;
+        }
+
+        setUploading(true);
+        try {
+            const compressedFile = await compressImage(file, {
+                maxWidth: 1920,
+                maxHeight: 1920,
+                quality: 0.8,
+                format: 'image/webp'
+            });
+
+            const supabase = createClient();
+            const fileName = `builds/${Date.now()}-${Math.random().toString(36).substring(7)}.webp`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('build-images')
+                .upload(fileName, compressedFile);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('build-images')
+                .getPublicUrl(fileName);
+
+            setBuildImage(publicUrl);
+            toast.success("Image uploaded successfully!");
+        } catch (error) {
+            toast.error("Failed to upload image.");
+        } finally {
+            setUploading(false);
+        }
+    };
+
     return (
         <div className="bg-surface/30 border border-white/5 rounded-2xl p-8">
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                {/* Image Upload Area */}
+                <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold mb-2">Build Screenshot</label>
+                    <div className="relative border-2 border-dashed border-white/10 rounded-xl bg-black/20 group hover:border-primary/50 transition-colors cursor-pointer overflow-hidden max-w-2xl mx-auto aspect-video flex flex-col items-center justify-center">
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                            disabled={uploading}
+                        />
+
+                        {uploading ? (
+                            <div className="flex flex-col items-center gap-4 text-text-secondary z-10">
+                                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                                <span className="font-semibold tracking-wider">UPLOADING...</span>
+                            </div>
+                        ) : buildImage ? (
+                            <div className="relative w-full h-full z-10">
+                                <Image
+                                    src={buildImage}
+                                    alt="Build preview"
+                                    fill
+                                    className="object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white font-semibold">
+                                    <Upload className="w-8 h-8 mb-2" />
+                                    Click to change image
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center gap-4 text-text-secondary z-10 group-hover:text-primary transition-colors">
+                                <div className="p-4 rounded-full bg-white/5 group-hover:bg-primary/10">
+                                    <Upload className="w-8 h-8" />
+                                </div>
+                                <span className="font-semibold tracking-wider text-sm md:text-base px-4 text-center">
+                                    DRAG & DROP OR BROWSE
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 {/* Core Edit Fields */}
-                <div className="space-y-4">
+                <div className="md:col-span-2 space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
                             <label className="block text-sm font-semibold mb-1">Title <span className="text-red-500">*</span></label>

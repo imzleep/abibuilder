@@ -3,6 +3,7 @@ import { getAdminBuild } from "@/app/actions/admin";
 import AdminEditForm from "@/components/AdminEditForm";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import BuildLogViewer from "@/components/admin/BuildLogViewer";
 
 export default async function AdminDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -30,9 +31,14 @@ export default async function AdminDetailPage({ params }: { params: Promise<{ id
                         <ArrowLeft className="w-4 h-4" />
                         Back to Dashboard
                     </Link>
-                    <h1 className="font-display font-bold text-3xl">
-                        Review <span className="text-gradient">Build</span>
-                    </h1>
+                    <div className="flex justify-between items-center">
+                        <h1 className="font-display font-bold text-3xl">
+                            Review <span className="text-gradient">Build</span>
+                        </h1>
+                        <div className="w-48">
+                            <BuildLogViewer buildId={build.id} />
+                        </div>
+                    </div>
                 </div>
 
                 <AdminEditForm build={build} />

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import AdminBuildEditor from "@/components/admin/AdminBuildEditor";
 import ReviewControls from "@/components/admin/ReviewControls";
+import BuildLogViewer from "@/components/admin/BuildLogViewer";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -97,6 +98,9 @@ export default async function ReviewBuildPage({ params }: { params: Promise<{ id
                             </div>
 
                             <ReviewControls buildId={build.id} />
+                            
+                            {/* Audit Log Button triggers Dialog */}
+                            <BuildLogViewer buildId={build.id} />
                         </div>
                     </div>
                 </div>

@@ -4,7 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { ArrowBigUp, ArrowBigDown, Bookmark, Copy, Trash2, Loader2 } from "lucide-react";
+import { ArrowBigUp, ArrowBigDown, Bookmark, Copy, Trash2, Loader2, Pencil } from "lucide-react";
 import { WeaponBuild } from "@/types";
 import { formatPrice, formatNumber, cn } from "@/lib/utils";
 import { handleVote, toggleBookmarkAction } from "@/app/actions/interaction";
@@ -136,6 +136,20 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
               <div className="absolute top-2 right-2 px-2.5 py-1 rounded-lg glass-elevated font-bold text-sm text-primary border border-primary/30">
                 {formatPrice(build.price)}
               </div>
+
+              {/* Edit Button */}
+              {(build.can_edit || build.is_owner) && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    router.push(build.is_owner ? `/edit/${build.short_code || build.id}` : `/admin/${build.id}`);
+                  }}
+                  className="absolute top-2 left-2 p-1.5 rounded-lg glass-elevated text-text-secondary hover:text-primary transition-all duration-300 z-10 border border-white/10 hover:border-primary/50"
+                  title="Edit Build"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </Link>
 

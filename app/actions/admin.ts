@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
+import { logBuildAction } from "@/app/actions/logs";
 
 
 // Access Control Helper
@@ -67,13 +68,28 @@ export async function getAdminBuild(id: string) {
 }
 
 export async function updateAdminBuild(id: string, updates: any) {
-    const { authorized, supabase } = await checkPermissions();
-    if (!authorized) return { success: false, error: "Unauthorized" };
+    const { authorized, supabase, user } = await checkPermissions();
+    if (!authorized || !user) return { success: false, error: "Unauthorized" };
+
+    const { data: build } = await supabase.from("builds").select("*").eq("id", id).single();
+    
+    const changes: Record<string, any> = {};
+    if (build) {
+        for (const key in updates) {
+            if (updates[key] !== undefined && JSON.stringify(build[key]) !== JSON.stringify(updates[key])) {
+                changes[key] = { old: build[key], new: updates[key] };
+            }
+        }
+    }
 
     const { error } = await supabase
         .from("builds")
         .update(updates)
         .eq("id", id);
+        
+    if (Object.keys(changes).length > 0) {
+        await logBuildAction(id, user.id, "edited", changes);
+    }
 
     if (error) return { success: false, error: error.message };
 
@@ -86,9 +102,9 @@ export async function updateAdminBuild(id: string, updates: any) {
 }
 
 export async function verifyBuildAction(buildId: string, status: "verified" | "rejected") {
-    const { authorized, supabase } = await checkPermissions();
+    const { authorized, supabase, user } = await checkPermissions();
 
-    if (!authorized) {
+    if (!authorized || !user) {
         return { success: false, error: "Unauthorized" };
     }
 
@@ -100,6 +116,8 @@ export async function verifyBuildAction(buildId: string, status: "verified" | "r
     if (error) {
         return { success: false, error: error.message };
     }
+
+    await logBuildAction(buildId, user.id, status);
 
     revalidatePath("/admin");
     revalidatePath("/");
