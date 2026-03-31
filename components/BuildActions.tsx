@@ -19,9 +19,10 @@ interface BuildActionsProps {
     buildTitle: string;
     canEdit: boolean;
     canDelete: boolean;
+    isOwner?: boolean;
 }
 
-export default function BuildActions({ buildId, buildTitle, canEdit, canDelete }: BuildActionsProps) {
+export default function BuildActions({ buildId, buildTitle, canEdit, canDelete, isOwner }: BuildActionsProps) {
     const router = useRouter();
     const [isDeleting, setIsDeleting] = useState(false);
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -46,15 +47,18 @@ export default function BuildActions({ buildId, buildTitle, canEdit, canDelete }
         }
     };
 
-    if (!canEdit && !canDelete) return null;
+    if (!canEdit && !canDelete && !isOwner) return null;
 
     return (
         <>
             <div className="flex gap-3">
-                {/* Edit Button (Mods/Admins Only) */}
-                {canEdit && (
+                {/* Edit Button (Admins or Owners) */}
+                {(canEdit || isOwner) && (
                     <button
-                        onClick={() => router.push(`/admin/${buildId}`)}
+                        onClick={() => {
+                            if (canEdit) router.push(`/admin/${buildId}`);
+                            else router.push(`/edit/${buildId}`);
+                        }}
                         className="flex-1 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 hover:text-white transition-all font-semibold flex items-center justify-center gap-2 border border-primary/20"
                     >
                         <Edit className="w-4 h-4" />

@@ -510,7 +510,11 @@ export async function getBuildAction(buildId: string) {
     const { data, error } = await query.single();
 
     if (error || !data) {
-        console.error("Get Single Build Error:", error);
+        // PostgREST naturally returns an error when .single() finds no rows.
+        // We log it only if it's a real unexpected error (code !== 'PGRST116')
+        if (error && error.code !== 'PGRST116') {
+            console.warn("Get Single Build Database Error:", error);
+        }
         return { success: false, error: "Build not found" };
     }
 
@@ -536,6 +540,7 @@ export async function getBuildAction(buildId: string) {
     }
 
     const canDelete = user ? (user.id === data.user_id || isAdmin || isMod) : false;
+    const isOwner = user ? user.id === data.user_id : false;
 
     // Dynamic Tag Logic
     let displayTags = data.tags || [];
@@ -575,8 +580,65 @@ export async function getBuildAction(buildId: string) {
         can_delete: canDelete,
         can_edit: isAdmin || isMod,
         user_id: data.user_id,
+        is_owner: isOwner,
         short_code: data.short_code // NEW: Critical for Canonical URL
     };
 
     return { success: true, build };
+}
+
+export async function updateUserBuildAction(buildId: string, updates: any) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return { success: false, error: "You must be logged in to edit a build." };
+    }
+
+    // 1. Fetch Build to check ownership
+    const { data: build, error: fetchError } = await supabase
+        .from("builds")
+        .select("user_id")
+        .eq("id", buildId)
+        .single();
+
+    if (fetchError || !build) {
+        return { success: false, error: "Build not found." };
+    }
+
+    // 2. Check Permissions (Owner)
+    if (build.user_id !== user.id) {
+        return { success: false, error: "Unauthorized: You can only edit your own builds." };
+    }
+
+    // 3. Filter allowed fields only
+    // This prevents malicious users from injecting status="verified" or changing their image_url directly
+    const allowedFields = ['title', 'description', 'build_code', 'price', 
+        'v_recoil_control', 'h_recoil_control', 'ergonomics', 'weapon_stability', 
+        'accuracy', 'hipfire_stability', 'effective_range', 'muzzle_velocity', 'tags'];
+    
+    let safeUpdates: any = {};
+    for (const key of allowedFields) {
+        if (updates.hasOwnProperty(key)) {
+            safeUpdates[key] = updates[key];
+        }
+    }
+
+    // 4. Update
+    const { error: updateError } = await supabase
+        .from("builds")
+        .update(safeUpdates)
+        .eq("id", buildId);
+
+    if (updateError) {
+        return { success: false, error: updateError.message };
+    }
+
+    // 5. Revalidate
+    revalidatePath("/builds");
+    revalidatePath("/");
+    
+    // Attempt to revalidate the specific build using shortcode or ID if we knew it, but "/builds" covers most.
+    
+    return { success: true };
 }

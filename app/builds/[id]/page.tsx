@@ -167,6 +167,7 @@ export default async function BuildDetailPage({ params }: Props) {
                             buildTitle={build.title}
                             canEdit={build.can_edit}
                             canDelete={build.can_delete}
+                            isOwner={build.is_owner}
                         />
 
                         <div className="glass-elevated rounded-xl p-6 border border-white/5">

@@ -24,7 +24,9 @@ export interface WeaponBuild {
   is_bookmarked?: boolean;
   can_delete?: boolean;
   can_edit?: boolean;
+  is_owner?: boolean;
   short_code?: string;
+  description?: string;
 }
 
 export interface FilterOptions {
