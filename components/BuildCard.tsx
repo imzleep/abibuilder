@@ -118,8 +118,8 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
 
   return (
     <>
-      <div className="group relative glass-elevated rounded-xl overflow-hidden transition-all duration-300 animate-fade-in hover:border-primary/30">
-        <div className="relative p-4">
+      <div className="group relative glass-elevated rounded-xl overflow-hidden transition-all duration-300 animate-fade-in hover:border-primary/30 flex flex-col h-full">
+        <div className="relative p-4 flex flex-col h-full">
           {/* Image Section */}
           <Link href={`/builds/${build.short_code || build.id}`} className="block">
             <div className="relative mb-3 rounded-lg overflow-hidden bg-surface aspect-[4/3]">
@@ -137,19 +137,6 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
                 {formatPrice(build.price)}
               </div>
 
-              {/* Edit Button */}
-              {(build.can_edit || build.is_owner) && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push(build.is_owner ? `/edit/${build.short_code || build.id}` : `/admin/${build.id}`);
-                  }}
-                  className="absolute top-2 left-2 p-1.5 rounded-lg glass-elevated text-text-secondary hover:text-primary transition-all duration-300 z-10 border border-white/10 hover:border-primary/50"
-                  title="Edit Build"
-                >
-                  <Pencil className="w-4 h-4" />
-                </button>
-              )}
             </div>
           </Link>
 
@@ -244,7 +231,7 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
           </div>
 
           {/* Footer - Voting, Bookmark & Delete */}
-          <div className="flex items-center justify-between pt-3 border-t border-white/5">
+          <div className="flex items-center justify-between pt-3 border-t border-white/5 mt-auto">
             {/* Upvote/Downvote */}
             <div className="flex items-center gap-1.5">
               <button
@@ -275,6 +262,19 @@ export default function BuildCard({ build, onVote, onBookmark, onCopy, onDelete 
             </div>
 
             <div className="flex items-center gap-2">
+              {/* Edit Button (Admins or Owners) */}
+              {(build.can_edit || build.is_owner) && (
+                <button
+                  onClick={() => {
+                    router.push(build.is_owner ? `/edit/${build.short_code || build.id}` : `/admin/${build.id}`);
+                  }}
+                  className="p-2 rounded-lg glass text-text-secondary hover:text-primary transition-all duration-300 border border-white/5 hover:border-primary/30"
+                  title="Edit Build"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
+              )}
+
               {/* Delete Button (Conditional) */}
               {build.can_delete && (
                 <button

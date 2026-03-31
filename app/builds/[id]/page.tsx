@@ -7,6 +7,7 @@ import AdPlaceholder from "@/components/ads/AdPlaceholder";
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import BackButton from "@/components/BackButton";
 
 import { formatPrice } from "@/lib/utils";
 
@@ -133,12 +134,7 @@ export default async function BuildDetailPage({ params }: Props) {
             />
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Back Link */}
-                <Link
-                    href="/builds"
-                    className="inline-flex items-center text-sm text-text-secondary hover:text-primary mb-6 transition-colors"
-                >
-                    <ArrowLeft className="w-4 h-4 mr-1" /> Back to Builds
-                </Link>
+                <BackButton fallbackUrl="/builds" text="Back to Builds" />
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Left Column: The Card (We reuse the component for consistency and features) */}
@@ -190,7 +186,13 @@ export default async function BuildDetailPage({ params }: Props) {
                                 </div>
                                 <div className="flex justify-between border-b border-white/5 pb-2">
                                     <span className="text-text-secondary">Created</span>
-                                    <span className="text-white">{new Date(build.created_at).toLocaleDateString()}</span>
+                                    <span className="text-white">
+                                        {new Date(build.created_at).toLocaleDateString("en-GB", {
+                                            day: "numeric",
+                                            month: "short",
+                                            year: "numeric"
+                                        })}
+                                    </span>
                                 </div>
                             </div>
                         </div>

@@ -283,6 +283,8 @@ export async function getUserBuilds(userId: string, filters: any = {}, page: num
             is_bookmarked: isBookmarked,
             user_vote: myVote,
             can_delete: canDelete,
+            is_owner: user ? user.id === b.user_id : false,
+            can_edit: user ? (user.id === b.user_id || isAdmin || isMod) : false,
             short_code: b.short_code // NEW
         }
     });
@@ -519,6 +521,8 @@ export async function getUserBookmarkedBuilds(userId: string, filters: any = {},
                 is_bookmarked: true, // It is in bookmarks list
                 user_vote: myVote,
                 can_delete: canDelete,
+                is_owner: user ? user.id === b.user_id : false,
+                can_edit: user ? (user.id === b.user_id || isAdmin || isMod) : false,
                 short_code: b.short_code // NEW
             };
         }).filter((item) => item !== null) as WeaponBuild[];
