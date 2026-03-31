@@ -56,8 +56,8 @@ export default function BuildActions({ buildId, buildTitle, canEdit, canDelete, 
                 {(canEdit || isOwner) && (
                     <button
                         onClick={() => {
-                            if (canEdit) router.push(`/admin/${buildId}`);
-                            else router.push(`/edit/${buildId}`);
+                            if (isOwner) router.push(`/edit/${buildId}`);
+                            else if (canEdit) router.push(`/admin/${buildId}`);
                         }}
                         className="flex-1 px-4 py-2 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 hover:text-white transition-all font-semibold flex items-center justify-center gap-2 border border-primary/20"
                     >
