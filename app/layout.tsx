@@ -59,7 +59,9 @@ export const metadata: Metadata = {
     // WEAPONS
     "H416", "M4A1", "FAL", "AK-74N", "AK-12", "P-90", "SJ16", "M110", "MK14", "VSS",
     "M24", "AN-94", "M16", "AEK", "ACE31", "G3", "MPX", "PP19", "USAS12", "T03", "T951",
-    "h416 build", "m4a1 meta", "fal loadout", "sj16 build", "ak-74n modding"
+    "FAMAS", "T192",
+    "h416 build", "m4a1 meta", "fal loadout", "sj16 build", "ak-74n modding",
+    "famas build", "t192 loadout", "best famas meta", "t192 guide"
   ],
   authors: [{ name: "Zleep", url: "https://zleep.dev" }],
   creator: "Zleep",

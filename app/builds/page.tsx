@@ -27,7 +27,13 @@ export async function generateMetadata(
     } else if (weapons) {
         // Handle comma separated, take first one and pretty it up
         let weaponName = weapons.split(',')[0];
-        weaponName = weaponName.charAt(0).toUpperCase() + weaponName.slice(1);
+        const lowerWeapon = weaponName.toLowerCase();
+
+        if (lowerWeapon === 'famas' || lowerWeapon === 't192') {
+            weaponName = lowerWeapon.toUpperCase();
+        } else {
+            weaponName = weaponName.charAt(0).toUpperCase() + weaponName.slice(1);
+        }
 
         title = `${weaponName} Meta Builds & Loadouts | ABI Builder`;
         description = `Top rated ${weaponName} builds for Arena Breakout Infinite. Low recoil, high ergonomics, best ammo guides.`;
