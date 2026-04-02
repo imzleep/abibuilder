@@ -7,14 +7,17 @@ export default function AdBlockToast() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Delay the check slightly to give AdBlockers time to run and block the script
+        // Delay the check to give AdBlockers time to run and the script time to initialize
         const checkTimeout = setTimeout(() => {
-            // Look for the Google AdSense script tag or the window.adsbygoogle object
-            const isAdsbygooglePresent = (window as any).adsbygoogle !== undefined;
+            // 1. Check if Adsense object exists (it can be an array [] or object {})
+            const isAdsbygooglePresent = typeof (window as any).adsbygoogle !== "undefined";
 
-            // We can also check if a bait element with ad classes is hidden
+            // 2. Check if the script tag itself exists in the DOM
+            const isScriptInDom = !!document.querySelector('script[src*="adsbygoogle.js"]');
+
+            // 3. Use a simpler bait element to avoid generic tracking protection false positives
             const testAd = document.createElement("div");
-            testAd.className = "adsbox ad-placement pub_300x250 pub_300x250m pub_728x90 text-ad textAd text_ad text_ads text-ads text-ad-links";
+            testAd.className = "adsbox ad-placement pub_300x250";
             testAd.style.position = "absolute";
             testAd.style.top = "-1000px";
             testAd.style.left = "-1000px";
@@ -22,15 +25,17 @@ export default function AdBlockToast() {
 
             // Give DOM time to update rendering
             setTimeout(() => {
-                let isBlocked = false;
+                let isBaitBlocked = false;
                 const computedStyle = window.getComputedStyle(testAd);
 
-                if (testAd.offsetHeight === 0 || computedStyle.display === "none") {
-                    isBlocked = true;
+                if (testAd.offsetHeight === 0 || computedStyle.display === "none" || computedStyle.visibility === "hidden") {
+                    isBaitBlocked = true;
                 }
 
-                // If AdSense didn't load OR the bait div is hidden
-                if (!isAdsbygooglePresent || isBlocked) {
+                // If the script is missing from DOM OR 
+                // the bait is blocked AND (the script exists but the object is undefined)
+                // This reduces false positives for slow-loading scripts.
+                if (!isScriptInDom || (isBaitBlocked && !isAdsbygooglePresent)) {
                     setIsVisible(true);
                 }
 
@@ -38,9 +43,9 @@ export default function AdBlockToast() {
                 if (testAd.parentNode) {
                     testAd.parentNode.removeChild(testAd);
                 }
-            }, 100);
+            }, 500); // 0.5s for DOM check
 
-        }, 2000); // 2 seconds delay
+        }, 3000); // Increased initial delay to 3s for slower connections
 
         return () => clearTimeout(checkTimeout);
     }, []);
