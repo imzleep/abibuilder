@@ -7,18 +7,6 @@ export default function AdBlockToast() {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
-        // Check if dismissed within the last 7 days
-        const lastDismissed = localStorage.getItem("adblock-toast-dismissed");
-        if (lastDismissed) {
-            const dismissedAt = parseInt(lastDismissed, 10);
-            const sevenDays = 7 * 24 * 60 * 60 * 1000;
-            if (Date.now() - dismissedAt < sevenDays) {
-                return; // Still in cooldown period
-            } else {
-                localStorage.removeItem("adblock-toast-dismissed"); // Expired
-            }
-        }
-
         // Delay the check slightly to give AdBlockers time to run and block the script
         const checkTimeout = setTimeout(() => {
             // Look for the Google AdSense script tag or the window.adsbygoogle object
@@ -59,7 +47,6 @@ export default function AdBlockToast() {
 
     const handleDismiss = () => {
         setIsVisible(false);
-        localStorage.setItem("adblock-toast-dismissed", Date.now().toString());
     };
 
     if (!isVisible) return null;

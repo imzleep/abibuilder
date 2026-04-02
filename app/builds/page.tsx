@@ -19,7 +19,7 @@ export async function generateMetadata(
     let title = "All Builds | ABI Builder";
     let description = "Browse user-submitted weapon builds for Arena Breakout Infinite. Filter by weapon, price, and meta status.";
 
-    // Dynamic SEO Logic per Season 4 Plan
+    // Dynamic SEO Logic per Season 5 Plan
     if (query) {
         const safeQuery = query.charAt(0).toUpperCase() + query.slice(1);
         title = `${safeQuery} Meta Builds | ABI Builder`;
@@ -32,8 +32,8 @@ export async function generateMetadata(
         title = `${weaponName} Meta Builds & Loadouts | ABI Builder`;
         description = `Top rated ${weaponName} builds for Arena Breakout Infinite. Low recoil, high ergonomics, best ammo guides.`;
     } else if (tag === 'meta') {
-        title = "Current Meta Builds (Season 4) | ABI Builder";
-        description = "The absolute best weapon loadouts in Arena Breakout Infinite (Season 4). Dominate the raid with these meta builds.";
+        title = "Current Meta Builds (Season 5) | ABI Builder";
+        description = "The absolute best weapon loadouts in Arena Breakout Infinite (Season 5). Dominate the raid with these meta builds.";
     } else if (tag === 'budget') {
         title = "Best Budget Builds & Loadouts | ABI Builder";
         description = "Effective and cheap weapon builds for Arena Breakout Infinite. Save koen without sacrificing performance.";
