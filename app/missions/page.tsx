@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   }
 };
 
-export const runtime = 'nodejs';
+export const runtime = 'edge';
 
 export default async function MissionsPage() {
   const parts = await getMissions();
