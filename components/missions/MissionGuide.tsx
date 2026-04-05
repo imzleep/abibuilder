@@ -15,6 +15,28 @@ export default function MissionGuide({ parts }: MissionGuideProps) {
   const [selectedMission, setSelectedMission] = React.useState<Mission | null>(null);
   
   const activePart = parts[activePartIdx];
+  
+  const currentLane = selectedMission 
+    ? activePart.lanes.find(lane => lane.some(m => m.id === selectedMission.id)) 
+    : null;
+  const currentIndex = currentLane && selectedMission
+    ? currentLane.findIndex(m => m.id === selectedMission.id)
+    : -1;
+
+  const hasNext = currentLane ? currentIndex < currentLane.length - 1 : false;
+  const hasPrev = currentLane ? currentIndex > 0 : false;
+
+  const handleNext = () => {
+    if (hasNext && currentLane) {
+      setSelectedMission(currentLane[currentIndex + 1]);
+    }
+  };
+
+  const handlePrev = () => {
+    if (hasPrev && currentLane) {
+      setSelectedMission(currentLane[currentIndex - 1]);
+    }
+  };
 
   return (
     <div className="w-full space-y-12 py-8 px-4 md:px-8">
@@ -89,6 +111,10 @@ export default function MissionGuide({ parts }: MissionGuideProps) {
           mission={selectedMission}
           isOpen={!!selectedMission}
           onClose={() => setSelectedMission(null)}
+          onNext={handleNext}
+          onPrev={handlePrev}
+          hasNext={hasNext}
+          hasPrev={hasPrev}
         />
       </div>
 

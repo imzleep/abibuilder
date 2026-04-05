@@ -59,14 +59,7 @@ export default async function MissionsPage() {
          <MissionGuide parts={parts} />
       </div>
 
-      {/* Floating Action Button (Optional, for quick feedback or back to top) */}
-      <div className="fixed bottom-8 right-8 z-50">
-        <button className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-black hover:scale-110 transition-transform shadow-[0_0_20px_rgba(212,160,23,0.5)]">
-           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-           </svg>
-        </button>
-      </div>
+
     </main>
   );
 }
