@@ -8,10 +8,11 @@ export default function GoogleAdSense({ publisherId }: GoogleAdSenseProps) {
     if (!publisherId) return null;
 
     return (
-        <script
+        <Script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`}
             crossOrigin="anonymous"
-        ></script>
+            strategy="afterInteractive"
+        />
     );
 }
