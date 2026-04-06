@@ -32,6 +32,9 @@ export default function Footer() {
                         <Link href="/randomizer" className="hover:text-primary transition-colors">
                             Randomizer
                         </Link>
+                        <Link href="/privacy" className="hover:text-primary transition-colors">
+                            Privacy
+                        </Link>
                         <Link href="/contact" className="hover:text-primary transition-colors">
                             Contact
                         </Link>
