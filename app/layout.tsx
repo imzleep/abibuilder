@@ -101,6 +101,7 @@ export const metadata: Metadata = {
 };
 
 import GoogleAdSense from "@/components/ads/GoogleAdSense";
+import DiscordButton from "@/components/DiscordButton";
 
 export default async function RootLayout({
   children,
@@ -168,6 +169,7 @@ export default async function RootLayout({
         <Footer />
         <Toaster theme="dark" position="top-center" />
         <AdBlockToast />
+        <DiscordButton />
 
       </body>
     </html>

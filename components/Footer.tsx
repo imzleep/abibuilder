@@ -38,6 +38,12 @@ export default function Footer() {
                         <Link href="/contact" className="hover:text-primary transition-colors">
                             Contact
                         </Link>
+                        <Link href="/guides" className="hover:text-primary transition-colors">
+                            Guides
+                        </Link>
+                        <a href="https://discord.gg/XYzxR9zjbe" target="_blank" rel="noopener noreferrer" className="hover:text-[#5865F2] transition-colors">
+                            Discord
+                        </a>
                         <a href="https://buymeacoffee.com/zleepdev" target="_blank" rel="noopener noreferrer" className="hover:text-yellow-400 transition-colors text-yellow-500 font-semibold">
                             Support ❤️
                         </a>
