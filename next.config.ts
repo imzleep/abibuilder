@@ -35,7 +35,20 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "i.imgur.com", // Imgur
       },
+      {
+        protocol: "https",
+        hostname: "placehold.co", // Placeholder images
+      },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: '/missions',
+        destination: '/guides/missions',
+        permanent: true,
+      },
+    ];
   },
 };
 

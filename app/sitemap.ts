@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
+import { guides } from '@/lib/data/guides';
 
 export const runtime = 'edge';
 export const revalidate = 3600; // 1 Hour Cache
@@ -41,7 +42,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.5,
         },
         {
-            url: `${baseUrl}/missions`,
+            url: `${baseUrl}/guides/missions`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}/guides`,
             lastModified: new Date(),
             changeFrequency: 'daily',
             priority: 0.9,
@@ -59,6 +66,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.3,
         },
     ];
+
+    const guideRoutes: MetadataRoute.Sitemap = guides
+        .filter((g) => !g.linkOverride)
+        .map((guide) => ({
+            url: `${baseUrl}/guides/${guide.slug}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.8,
+        }));
+
+    routes = [...routes, ...guideRoutes];
 
     try {
         // 2. Fetch Profiles (Prioritize Streamers)

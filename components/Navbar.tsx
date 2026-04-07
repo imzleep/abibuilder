@@ -78,7 +78,7 @@ export default function Navbar({ user, profile }: NavbarProps) {
     { name: "Home", href: "/" },
     { name: "Builds", href: "/builds" },
     { name: "Randomizer", href: "/randomizer" },
-    { name: "Missions", href: "/missions" },
+    { name: "Guides", href: "/guides" },
     { name: "Upload Build", href: "/upload", highlight: true },
   ];
 

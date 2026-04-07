@@ -30,7 +30,7 @@ export default function AdBlockToast() {
 
     return (
         <a 
-            href="/missions"
+            href="/guides/missions"
             className="fixed bottom-6 right-6 z-50 animate-slide-in max-w-sm w-[calc(100%-3rem)] group"
         >
             <div className="relative glass-elevated border border-primary/40 p-5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] flex items-start gap-4 transition-all duration-300 hover:scale-[1.02] hover:border-primary">
