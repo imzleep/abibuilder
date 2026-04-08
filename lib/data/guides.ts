@@ -189,13 +189,14 @@ export const guides: Guide[] = [
 
       <h3 class="text-3xl font-bold mt-16 mb-6 text-primary">📋 Ammo Loadout Codes (Import Ready)</h3>
       <p>In order to use these codes, you will need to go to your storage and find the preset build option under your character. You will find the option to enter a build code inside.</p>
-      <ul>
+      <ul class="mb-6">
         <li><strong>M995 2x3:</strong> Equipment-3fcapxBFXpJCOf4w4</li>
         <li><strong>M995 3x3:</strong> Equipment-3fcapxBFXpJCOf4l4</li>
         <li><strong>DVC12 2x3:</strong> Equipment-3fcapxBFXpJCOf4c4</li>
         <li><strong>DVC12 3x3:</strong> Equipment-3fcapxBFXpJCOf4e4</li>
         <li><strong>BS 2x3:</strong> Equipment-3fyaiaeOnaH9wf4z4</li>
       </ul>
+      <p><em>(Shoutout to l1as_tv: <a href="https://youtu.be/05D2aRDYeN8" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent font-bold">Watch Original Video</a>)</em></p>
 
       <!-- AD -->
 
