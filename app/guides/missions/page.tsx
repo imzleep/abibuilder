@@ -1,6 +1,7 @@
 import React from 'react';
 import { getMissions } from "@/lib/missions";
 import MissionGuide from "@/components/missions/MissionGuide";
+import AdPlaceholder from "@/components/ads/AdPlaceholder";
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -59,6 +60,10 @@ export default async function MissionsPage() {
          <MissionGuide parts={parts} />
       </div>
 
+      {/* Ad Spot at the bottom */}
+      <div className="max-w-7xl mx-auto px-4 md:px-8 mt-16 mb-4">
+        <AdPlaceholder format="horizontal" text="SPONSORED SPOT" />
+      </div>
 
     </main>
   );

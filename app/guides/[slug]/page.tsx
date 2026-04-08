@@ -20,19 +20,16 @@ export async function generateMetadata(
     };
   }
 
-  // Pre-defined SEO data for specific guides
-  const isEconomyGuide = guide.slug === "season-5-economy-guide";
+  let title = `${guide.title} | ABI Builder`;
+  let description = guide.description;
+  let keywords: string[] | undefined = undefined;
+  let ogDescription = description;
 
-  const title = isEconomyGuide 
-    ? "How To Earn Koen Without Playing The Game (Barter Trades) | Arena Breakout: Infinite Market Guide"
-    : `${guide.title} | ABI Builder`;
-
-  const description = isEconomyGuide
-    ? "Learn the best market trading, contact barters, and arbitrage strategies in Arena Breakout: Infinite. Stop going broke and make millions of Koen passively without entering raids."
-    : guide.description;
-
-  const keywords = isEconomyGuide
-    ? [
+  if (guide.slug === "season-5-economy-guide") {
+    title = "How To Earn Koen Without Playing The Game (Barter Trades) | Arena Breakout: Infinite Market Guide";
+    description = "Learn the best market trading, contact barters, and arbitrage strategies in Arena Breakout: Infinite. Stop going broke and make millions of Koen passively without entering raids.";
+    ogDescription = "Master the market and contact trades to print Koen passively. The ultimate guide to wealth in the Dark Zone.";
+    keywords = [
         "Arena Breakout Infinite", "ABI S5", "Arena Breakout Infinite Season 5", "Arena S5", 
         "ABI Season 5 economy", "Arena Breakout Season 5 Koen", "ABI S5 Market", 
         "Arena Breakout Infinite S5 guide", "ABI S5 Barter Trades", "Deke Vinson S5", 
@@ -43,8 +40,22 @@ export async function generateMetadata(
         "Season 5 economy", "ABI Season 5", "market arbitrage", "Koen making guide", 
         "dark zone wealth", "ABI barter trades", "Arena Breakout Infinite S5 market",
         "ABI S5 money guide", "Arena Breakout S5 guide", "ABI marketplace guide"
-      ]
-    : undefined;
+    ];
+  } else if (guide.slug === "ammo-resets-guide") {
+    title = "The Professional’s Guide to Ammo Resets | Arena Breakout: Infinite Market Guide";
+    description = "Master the market reset timers, inventory tricks, and trading strategies to generate millions of Koen passively trading ammo in Arena Breakout: Infinite.";
+    ogDescription = "Turn yourself into a market mogul in the Dark Zone. Learn the exact timers, loadouts, and mail tricks to dominate ammo trading.";
+    keywords = [
+        "Arena Breakout Infinite", "ABI Ammo Trading", "Arena Breakout Infinite Market Resets", "Arena S5", 
+        "ABI Season 5 economy", "Arena Breakout Ammo Reset Times", "ABI Market Guide", 
+        "Arena Breakout Infinite S5 guide", "ABI Ammo Mogul", "ABI Sydney Time", 
+        "Arena Breakout Infinite Koen making", "ABI market guide", "Arena Breakout Infinite passive income",
+        "how to make Koen fast", "ABI market trading", "ABI buy the dip", "ABI economy guide", 
+        "best ammo trades ABI", "Arena Breakout Koen guide", "make money Arena Breakout Infinite", 
+        "ABI mail trick", "earn koen ABI", "Season 5 economy", "ABI market reset", "market arbitrage", "Koen making guide", 
+        "ABI ammo strategy"
+    ];
+  }
 
   return {
     title,
@@ -52,18 +63,14 @@ export async function generateMetadata(
     keywords,
     openGraph: {
       title: guide.title, // OG Title as requested
-      description: isEconomyGuide 
-        ? "Master the market and contact trades to print Koen passively. The ultimate guide to wealth in the Dark Zone."
-        : description,
+      description: ogDescription,
       type: "article",
       images: guide.thumbnailUrl ? [{ url: guide.thumbnailUrl }] : [],
     },
     twitter: {
       card: "summary_large_image",
       title: guide.title,
-      description: isEconomyGuide 
-        ? "Master the market and contact trades to print Koen passively. The ultimate guide to wealth in the Dark Zone."
-        : description,
+      description: ogDescription,
       images: guide.thumbnailUrl ? [guide.thumbnailUrl] : [],
     }
   };

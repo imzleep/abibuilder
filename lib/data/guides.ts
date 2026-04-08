@@ -144,5 +144,133 @@ export const guides: Guide[] = [
     `,
     author: "mohammad",
     authorDisplayName: "Mohammad",
+  },
+  {
+    id: "g-3",
+    slug: "ammo-resets-guide",
+    title: "The Professional’s Guide to Ammo Resets in Arena Breakout Infinite (ABI)",
+    description: "While most players gamble their gear in the Dark Zone, elite \"Ammo Traders\" generate millions of Koen daily through calculated market manipulation. This comprehensive guide combines advanced timing strategies with inventory \"hacks\" to turn you into a market mogul.",
+    thumbnailUrl: "/guide_images/ammos.png",
+    content: `
+      <p>In the high-stakes world of Arena Breakout Infinite (ABI), true wealth isn't just found on the bodies of your enemies; it’s built within the market menus. While most players gamble their gear in the Dark Zone, elite "Ammo Traders" generate millions of Koen daily through calculated market manipulation. This comprehensive guide combines advanced timing strategies with inventory "hacks" to turn you into a market mogul.</p>
+
+      <h2 class="text-4xl font-extrabold mt-16 mb-8 text-white">1. The Core Philosophy: Buying the Dip</h2>
+      <p>The ABI market is driven by Market Resets. During these periods, the game refreshes the supply of high-tier ammunition (like 995 rounds), causing prices to plummet briefly. Your goal is to buy at the "floor" (the lowest price) and sell at the "ceiling" (the peak price).</p>
+
+      <h3 class="text-3xl font-bold mt-16 mb-6 text-primary">The Master Reset Schedule</h3>
+      <p>To succeed, you must track the Sydney (AEST) Time zone.</p>
+      <ul class="mb-8">
+        <li><strong>The 15:50 (3:50 PM) Reset:</strong> An "Uncertain Reset." It is influenced by active player counts. It might not happen every day, but you should always be watching.</li>
+        <li><strong>The 18:50 – 19:30 Window:</strong> This is the First Guaranteed Reset. Once this hits, the "Hourly Rule" begins.</li>
+        <li><strong>The Hourly Intervals:</strong> After the first guaranteed reset, the market will refresh every hour (e.g., 20:30, 21:30, 22:30) for at least four consecutive cycles.</li>
+        <li><strong>The 7th Reset:</strong> A final, non-guaranteed reset that occurs late in the cycle.</li>
+      </ul>
+      <p>Shoutout to Mr. DeanPo you can check reset timers in his discord here: <a href="https://discord.com/invite/deanpo" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent font-bold">https://discord.com/invite/deanpo</a></p>
+
+      <!-- AD -->
+
+      <h2 class="text-4xl font-extrabold mt-16 mb-8 text-white">2. The "Market Mogul" Loadouts: Maximizing Transport Efficiency</h2>
+      <p>To trade at the highest level, you need to move thousands of rounds at once. Whether you are doing a "Buy-Cancel" mail trick or simply organizing your massive profits, having the right gear is essential. Below are the specialized loadout codes for the RAL Heavy Military Backpack and the 926 Premium Chest Rig, optimized for different ammo types.</p>
+
+      <div class="mt-24 mb-12">
+        <img src="/guide_images/ammoloadout.png" alt="Ammo Loadout Codes" class="rounded-xl border border-white/10 w-full" />
+      </div>
+
+      <h3 class="text-3xl font-bold mt-16 mb-6 text-primary">The Setup</h3>
+      <p>For these builds, we utilize the two largest storage options in the game:</p>
+      <ul>
+        <li><strong>926 Premium Field Chest Rig:</strong> The king of rigs with 24 slots.</li>
+        <li><strong>RAL Heavy Military Backpack:</strong> The ultimate hauler with 50 slots.</li>
+      </ul>
+      <div class="p-4 my-6 rounded-lg glass-elevated border-l-4 border-yellow-500">
+        <strong class="text-yellow-500">IMPORTANT TIP:</strong><br />
+        As of the season 5 update, RAL Heavy Military Backpacks have to be crafted and will require you to upgrade your workbench to do so. If your workbench level is not high enough, you can use a LUC Expanded Tactical Backpack instead. (45 slots)
+      </div>
+
+      <h3 class="text-3xl font-bold mt-16 mb-6 text-primary">📋 Ammo Loadout Codes (Import Ready)</h3>
+      <p>In order to use these codes, you will need to go to your storage and find the preset build option under your character. You will find the option to enter a build code inside.</p>
+      <ul>
+        <li><strong>M995 2x3:</strong> Equipment-3fcapxBFXpJCOf4w4</li>
+        <li><strong>M995 3x3:</strong> Equipment-3fcapxBFXpJCOf4l4</li>
+        <li><strong>DVC12 2x3:</strong> Equipment-3fcapxBFXpJCOf4c4</li>
+        <li><strong>DVC12 3x3:</strong> Equipment-3fcapxBFXpJCOf4e4</li>
+        <li><strong>BS 2x3:</strong> Equipment-3fyaiaeOnaH9wf4z4</li>
+      </ul>
+
+      <!-- AD -->
+
+      <h2 class="text-4xl font-extrabold mt-16 mb-8 text-white">3. Advanced Efficiency: The "Red Row" Strategy</h2>
+
+      <div class="mt-24 mb-12">
+        <img src="/guide_images/notenoughmoney.png" alt="Not Enough Money Red Row" class="rounded-xl border border-white/10 w-full" />
+      </div>
+      <p><em>(shoutout to l1as_tv <a href="https://www.youtube.com/@L1AS_TV" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent font-bold">https://www.youtube.com/@L1AS_TV</a>)</em></p>
+
+      <p>Sitting and staring at numbers is exhausting. Professional traders use their Liquid Cash as a visual alarm.</p>
+      <p>By keeping your liquid cash at a specific threshold—typically 33 to 34 Million Koen—you create a "Red Row" indicator. When the ammo price is high, a second row of ammo appears. This row has a red error message, which is where the name of this strategy comes from.</p>
+      <p><strong>The Magic Moment:</strong> The second that the second row disappears and turns into a normal purchase button, you know a reset has happened. You don't even need to read the numbers; the UI tells you the price has dropped below your threshold. This allows you to watch YouTube or browse the web on a second monitor while simply glancing at the red alerts.</p>
+
+      <h3 class="text-3xl font-bold mt-16 mb-6 text-primary">Storing Excess Wealth</h3>
+      <p>If you have too much cash (e.g., 50M+), you need to "hide" it to keep your threshold at 33M.</p>
+
+      <div class="mt-24 mb-12">
+        <img src="/guide_images/braceletandpen.png" alt="Golden Pens and Jade Bracelets" class="rounded-xl border border-white/10 w-full" />
+      </div>
+
+      <ul>
+        <li><strong>Golden Pens & Jade Bracelets:</strong> Buy these items when their market price is close to their vendor sell price. This "freezes" your cash into assets that don't take up much space and can be liquidated instantly.</li>
+        <li><strong>Unclaimed Mail:</strong> Keep your profits from the previous day in your mailbox. Do not "Claim All" until you actually need the liquid cash for a buying spree.</li>
+      </ul>
+
+      <!-- AD -->
+
+      <h2 class="text-4xl font-extrabold mt-16 mb-8 text-white">4. The Stash Space Hack: The Mail Trick</h2>
+
+      <div class="mt-24 mb-12">
+        <img src="/guide_images/ammomail.png" alt="Ammo Mail Trick" class="rounded-xl border border-white/10 w-full" />
+      </div>
+      <p><em>(Shoutout to <a href="https://www.youtube.com/@L1AS_TV" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent font-bold">https://www.youtube.com/@L1AS_TV</a>)</em></p>
+
+      <p>One of the biggest bottlenecks in trading is stash space. High-tier ammo stacks of 120 can quickly fill up even the largest inventories. Here is the professional "Mail Trick" to bypass stash limits:</p>
+      <ol class="list-decimal list-inside space-y-2 mb-8">
+        <li><strong>Fill your Stash:</strong> Ensure your stash is almost full, leaving only 2 or 3 empty slots.</li>
+        <li><strong>Initiate Purchase:</strong> Buy a massive amount of ammo (e.g., 8-10 stacks).</li>
+        <li><strong>The Buy-Cancel Flow:</strong> Press "Buy," and immediately press "Cancel" right after.</li>
+        <li><strong>Check Mail:</strong> Because your stash didn't have enough room for the full order, the game automatically sends the entire purchase to your In-game Mail.</li>
+      </ol>
+      <p>This allows you to store thousands of rounds in your mailbox for days, taking up zero stash space and removing the need for expensive magazine backpacks or rigs.</p>
+
+      <h2 class="text-4xl font-extrabold mt-16 mb-8 text-white">5. The Selling Phase: Market Undercutting</h2>
+      <p>Buying is only half the battle. You must sell when the market is "dry" (no resets occurring). The golden window for selling is between 03:00 AM and 16:00 PM Sydney Time.</p>
+
+      <h3 class="text-3xl font-bold mt-16 mb-6 text-primary">The 50-Koen Rule</h3>
+      <p>To ensure your stock moves instantly, you must undercut the market. If the current lowest price is 6700 Koen, list yours at 6,650. Being the top listing is more important than an extra 50 Koen per round, as it prevents your capital from being locked up during the next reset.</p>
+
+      <h2 class="text-4xl font-extrabold mt-16 mb-8 text-white">6. The Financial Breakdown (Case Study)</h2>
+      <p>Let’s look at the math for a standard trade of 5200 rounds of 995 ammunition:</p>
+      <ul>
+        <li><strong>Purchase Price (Floor):</strong> ~5,800 Koen/round (~30.1M Total)</li>
+        <li><strong>Sale Price (Ceiling):</strong> ~7,000 Koen/round (~36.4M Total)</li>
+        <li><strong>The Tax Factor:</strong> Every 120-round stack costs roughly 60,000 Koen in taxes and handling fees.</li>
+        <li><strong>Total Tax (43 Stacks):</strong> ~2.6 Million Koen.</li>
+        <li><strong>Net Profit:</strong> ~4 Million Koen per cycle.</li>
+      </ul>
+      <p>If you hit four resets a night, you are looking at 16 Million Koen in pure profit for less than 30 minutes of actual "work."</p>
+
+      <h2 class="text-4xl font-extrabold mt-16 mb-8 text-white">7. Summary Checklist for Success</h2>
+      <ul>
+        <li><strong>Convert your clock:</strong> Always know the current Sydney time.</li>
+        <li><strong>Thresholding:</strong> Keep your cash at 33M to use the "Red Row" visual cue.</li>
+        <li><strong>Mail Storage:</strong> Use the Buy-Cancel trick to keep your stash empty and your mail full of ammo.</li>
+        <li><strong>Don't Overstay:</strong> If a reset is approaching, stop selling. The price will crash, and you’ll lose money on the listing fee.</li>
+        <li><strong>Patience:</strong> The best traders are the ones who can wait for the price peak.</li>
+      </ul>
+      <p>By mastering these "out-of-raid" mechanics, you ensure that you can always afford the best gear, the best thermal optics, and the most expensive ammo when you finally decide to step back into the Dark Zone. Happy trading!</p>
+
+      <!-- AD -->
+    `,
+    author: "mohammad",
+    authorDisplayName: "Mohammad",
   }
 ];
+

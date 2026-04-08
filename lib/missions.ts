@@ -343,8 +343,7 @@ const PART_2_TRACK_2: Mission[] = [
     tips: "The second objective can be completed easily on any map by focusing on toolboxes. Relevant items will be marked with an exclamation mark (!). All missions in this track are relatively easy, so you can choose which one to skip based on your preference.",
     lane: 1,
     part: 2,
-    column: 1,
-    isRecommendedToSkip: true
+    column: 1
   },
   {
     id: "p2-l1-c2",
@@ -374,7 +373,8 @@ const PART_2_TRACK_2: Mission[] = [
     lane: 1,
     part: 2,
     column: 4,
-    isTeamMission: true
+    isTeamMission: true,
+    isRecommendedToSkip: true
   },
   {
     id: "p2-l1-c5",
