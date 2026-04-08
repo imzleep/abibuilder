@@ -204,7 +204,7 @@ export const guides: Guide[] = [
       <div class="mt-24 mb-12">
         <img src="/guide_images/notenoughmoney.png" alt="Not Enough Money Red Row" class="rounded-xl border border-white/10 w-full" />
       </div>
-      <p><em>(shoutout to l1as_tv <a href="https://www.youtube.com/@L1AS_TV" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent font-bold">https://www.youtube.com/@L1AS_TV</a>)</em></p>
+      <p><em>(Shoutout to l1as_tv: <a href="https://youtu.be/biDL9PRnXns" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent font-bold">Watch Original Video</a>)</em></p>
 
       <p>Sitting and staring at numbers is exhausting. Professional traders use their Liquid Cash as a visual alarm.</p>
       <p>By keeping your liquid cash at a specific threshold—typically 33 to 34 Million Koen—you create a "Red Row" indicator. When the ammo price is high, a second row of ammo appears. This row has a red error message, which is where the name of this strategy comes from.</p>
@@ -229,7 +229,7 @@ export const guides: Guide[] = [
       <div class="mt-24 mb-12">
         <img src="/guide_images/ammomail.png" alt="Ammo Mail Trick" class="rounded-xl border border-white/10 w-full" />
       </div>
-      <p><em>(Shoutout to <a href="https://www.youtube.com/@L1AS_TV" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent font-bold">https://www.youtube.com/@L1AS_TV</a>)</em></p>
+      <p><em>(Shoutout to l1as_tv: <a href="https://youtu.be/biDL9PRnXns" target="_blank" rel="noopener noreferrer" class="text-primary hover:text-accent font-bold">Watch Original Video</a>)</em></p>
 
       <p>One of the biggest bottlenecks in trading is stash space. High-tier ammo stacks of 120 can quickly fill up even the largest inventories. Here is the professional "Mail Trick" to bypass stash limits:</p>
       <ol class="list-decimal list-inside space-y-2 mb-8">
